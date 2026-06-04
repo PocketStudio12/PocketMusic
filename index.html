@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pocket Music</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:white;
+}
+
+/* HEADER */
+.header{padding:10px;}
+.header input{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#1c1c1c;
+  color:white;
+}
+
+#suggestions{
+  background:#111;
+  border-radius:10px;
+  margin-top:5px;
+}
+.sugg{
+  display:flex;
+  padding:8px;
+  cursor:pointer;
+}
+.sugg img{
+  width:40px;
+  height:40px;
+  border-radius:6px;
+  margin-right:10px;
+}
+
+/* SONG LIST */
+.row{
+  display:flex;
+  overflow-x:auto;
+  gap:10px;
+  padding:10px;
+}
+.card{
+  min-width:140px;
+  background:#181818;
+  border-radius:10px;
+  overflow:hidden;
+  cursor:pointer;
+}
+.card img{
+  width:100%;
+  height:110px;
+  object-fit:cover;
+}
+
+/* FULL PLAYER */
+.full{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.full img{
+  width:250px;
+  border-radius:20px;
+}
+
+/* MINI PLAYER */
+.mini{
+  position:fixed;
+  bottom:60px;
+  left:10px;
+  right:10px;
+  background:#181818;
+  padding:10px;
+  border-radius:10px;
+  display:none;
+}
+
+/* NAV */
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  background:#111;
+}
+.nav button{
+  flex:1;
+  padding:10px;
+  border:none;
+  background:none;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+    <img src="https://api.pocketstudio.qzz.io/icon.png" style="width:50px;height:50px;border-radius:10px;">
+    <h2 style="margin:0;">Pocket Music</h2>
+  </div>
+
+  <input id="search" placeholder="Search..." oninput="liveSearch()">
+  <div id="suggestions"></div>
+</div>
+
+<!-- HOME -->
+<div id="home"></div>
+
+<!-- FULL PLAYER -->
+<div class="full" id="fullPlayer">
+  <img id="fimg">
+  <h2 id="fname"></h2>
+  <h3 id="fdescription"></h3>
+  <audio id="audio" controls></audio>
+
+  <div style="margin-top:10px;">
+    <button onclick="minimize()">Minimize ⬇️</button>
+    <button onclick="closeAll()">Close ❌</button>
+  </div>
+</div>
+
+<!-- MINI PLAYER -->
+<div class="mini" id="miniPlayer">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <img id="mimg" style="width:50px;height:50px;border-radius:8px;">
+    <div style="flex:1">
+      <div id="mname"></div>
+    </div>
+    <button onclick="togglePlay()">▶ / ⏸</button>
+    <button onclick="closeAll()">❌</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="showPage('home')">🏠</button>
+</div>
+
+<script>
+
+const API = "https://api.pocketstudio.qzz.io";
+
+let songs = [];
+let categories = [];
+
+// LOAD DATA
+async function load(){
+  categories = await (await fetch(API+"/api/categories")).json();
+  songs = await (await fetch(API+"/api/songs")).json();
+  render();
+}
+
+// HIGHLIGHT SEARCH
+function highlight(text,q){
+  let i=text.toLowerCase().indexOf(q);
+  if(i==-1)return text;
+  return text.slice(0,i)+"<span style='color:red'>"+text.slice(i,i+q.length)+"</span>"+text.slice(i+q.length);
+}
+
+// RENDER HOME
+function render(list=null,q=""){
+  let d=list||songs;
+  home.innerHTML="";
+
+  categories.forEach(cat=>{
+    let s=d.filter(x=>x.category==cat);
+    if(!s.length)return;
+
+    home.innerHTML+=`
+      <h3>${cat}</h3>
+      <div class="row">
+        ${s.map(x=>`
+          <div class="card" onclick='playSong(${JSON.stringify(x)})'>
+            <img src="${x.image}">
+            <div style="padding:5px">
+              ${q ? highlight(x.name,q) : x.name}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  });
+}
+
+// PLAY SONG
+function playSong(s){
+  fullPlayer.style.display="flex";
+
+  fimg.src=s.image;
+  fname.innerText=s.name;
+  fdescription.innerText=s.singer;
+  audio.src=s.music;
+  audio.play();
+
+  miniPlayer.style.display="none";
+}
+
+// MINIMIZE
+function minimize(){
+  fullPlayer.style.display="none";
+  miniPlayer.style.display="block";
+
+  mimg.src=fimg.src;
+  mname.innerText=fname.innerText;
+}
+
+// CLOSE
+function closeAll(){
+  audio.pause();
+  audio.currentTime=0;
+
+  fullPlayer.style.display="none";
+  miniPlayer.style.display="none";
+}
+
+// PLAY/PAUSE
+function togglePlay(){
+  if(audio.paused) audio.play();
+  else audio.pause();
+}
+
+// SEARCH
+function liveSearch(){
+  let q=search.value.trim().toLowerCase();
+
+  if(!q){
+    suggestions.innerHTML="";
+    render();
+    return;
+  }
+
+  let f=songs.filter(s=>s.name.toLowerCase().includes(q));
+
+  suggestions.innerHTML="";
+
+  f.slice(0,5).forEach(s=>{
+    suggestions.innerHTML+=`
+      <div class="sugg" onclick='playSong(${JSON.stringify(s)})'>
+        <img src="${s.image}">
+        <div>${highlight(s.name,q)}</div>
+      </div>
+    `;
+  });
+
+  render(f,q);
+}
+
+// CLICK OUTSIDE
+document.addEventListener("click",(e)=>{
+  if(!e.target.closest(".header")){
+    suggestions.innerHTML="";
+  }
+});
+
+document.getElementById("miniPlayer")
+.addEventListener("click", function(e){
+
+    if(e.target.tagName === "BUTTON"){
+        return;
+    }
+
+    document.getElementById("miniPlayer").style.display = "none";
+
+    document.getElementById("fullPlayer").style.display = "flex";
+
+});
+
+
+
+load();
+
+</script>
+
+</body>
+</html>
