@@ -194,16 +194,36 @@ function highlight(text,q){
 
 // RENDER HOME
 function render(list=null,q=""){
-  let d=list||songs;
-  home.innerHTML="";
+  let d = list || songs;
+  home.innerHTML = "";
 
   categories.forEach(cat=>{
-    let s=d.filter(x=>x.category==cat);
-    if(!s.length)return;
 
-    home.innerHTML+=`
-      <h3>${cat}</h3>
-      <div class="row">
+    let s = d.filter(x=>x.category==cat);
+
+    if(!s.length) return;
+
+    let rowId = "row_" + cat.replace(/\s+/g,"_");
+
+    home.innerHTML += `
+
+      <div style="
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        padding:0 10px;
+      ">
+
+        <h3>${cat}</h3>
+
+        <div>
+          <button onclick="slideLeft('${rowId}')">⬅️</button>
+          <button onclick="slideRight('${rowId}')">➡️</button>
+        </div>
+
+      </div>
+
+      <div class="row" id="${rowId}">
         ${s.map(x=>`
           <div class="card" onclick='playSong(${JSON.stringify(x)})'>
             <img src="${x.image}">
@@ -213,9 +233,25 @@ function render(list=null,q=""){
           </div>
         `).join("")}
       </div>
+
     `;
   });
 }
+
+function slideLeft(id){
+  document.getElementById(id).scrollBy({
+    left:-300,
+    behavior:"smooth"
+  });
+}
+
+function slideRight(id){
+  document.getElementById(id).scrollBy({
+    left:300,
+    behavior:"smooth"
+  });
+     }
+     
 
 // PLAY SONG
 function playSong(s){
