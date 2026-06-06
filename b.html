@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BCD Converter</title>
+<style>
+body{
+    font-family:Arial;
+    padding:20px;
+}
+textarea{
+    width:100%;
+    height:120px;
+}
+button{
+    margin-top:10px;
+    padding:10px;
+}
+#output{
+    margin-top:20px;
+    white-space:pre-wrap;
+    border:1px solid #ccc;
+    padding:10px;
+}
+</style>
+</head>
+<body>
+
+<h2>ENG ↔ BCD Converter</h2>
+
+<textarea id="input" placeholder="Type English or BCD..."></textarea>
+
+<br>
+<button onclick="convert()">Convert</button>
+
+<div id="output"></div>
+
+<script>
+
+function charToBCD(ch){
+
+    if(ch===" ") return "0000";
+
+    ch=ch.toLowerCase();
+
+    if(ch==="z")
+        return "01100001";
+
+    let pos=ch.charCodeAt(0)-97;
+
+    if(pos<0||pos>24) return "";
+
+    let row=Math.floor(pos/5)+1;
+    let col=(pos%5)+1;
+
+    let r=row.toString(2).padStart(4,"0");
+    let c=col.toString(2).padStart(4,"0");
+
+    return r+c;
+}
+
+function bcdToChar(code){
+
+    if(code==="0000")
+        return " ";
+
+    if(code==="01100001")
+        return "z";
+
+    if(code.length!==8)
+        return "?";
+
+    let row=parseInt(code.substring(0,4),2);
+    let col=parseInt(code.substring(4,8),2);
+
+    if(row<1||row>5||col<1||col>5)
+        return "?";
+
+    let index=(row-1)*5+(col-1);
+
+    return String.fromCharCode(97+index);
+}
+
+function convert(){
+
+    let text=document.getElementById("input").value.trim();
+
+    let isBCD=/^[01\s]+$/.test(text);
+
+    if(isBCD){
+
+        let parts=text.split(/\s+/);
+        let result="";
+
+        for(let p of parts)
+            result+=bcdToChar(p);
+
+        document.getElementById("output").innerText=result;
+
+    }else{
+
+        let result=[];
+
+        for(let ch of text)
+            result.push(charToBCD(ch));
+
+        document.getElementById("output").innerText=result.join(" ");
+    }
+}
+
+</script>
+
+</body>
+  </html>
