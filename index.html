@@ -253,19 +253,36 @@ ${s.map(x=>`
 
         /* MINIMIZE */
         function minimize() {
-            fullPlayer.style.display = "none";
-            miniPlayer.style.display = "block";
+    fullPlayer.style.display = "none";
+    miniPlayer.style.display = "block";
 
-            mimg.src = fimg.src;
-            mname.innerText = fname.innerText;
-            audio.onplay = () => {
-                document.querySelector(".mini button").innerHTML = "⏸";
-            };
+    mimg.src = fimg.src;
+    mname.innerText = fname.innerText;
 
-            audio.onpause = () => {
-                document.querySelector(".mini button").innerHTML = "▶️";
-            };
-        }
+    // Current state check
+    document.querySelector(".mini button").innerHTML =
+        audio.paused ? "▶️" : "⏸";
+
+    // Future updates
+    audio.onplay = () => {
+        document.querySelector(".mini button").innerHTML = "⏸";
+    };
+
+    audio.onpause = () => {
+        document.querySelector(".mini button").innerHTML = "▶️";
+    };
+    }
+    function togglePlay() {
+    const btn = document.querySelector(".mini button");
+
+    if (audio.paused) {
+        audio.play();
+        btn.innerHTML = "⏸";
+    } else {
+        audio.pause();
+        btn.innerHTML = "▶️";
+    }
+}
 
         /* CLOSE */
         function closeAll() {
