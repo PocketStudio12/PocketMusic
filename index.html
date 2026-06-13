@@ -1,213 +1,213 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket Music</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pocket Music</title>
 
-<meta property="og:title" content="Pocket Music">
-<meta property="og:description" content="Listen Music Online">
-<meta property="og:image" content="icon.png">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1655942962729576"
-     crossorigin="anonymous"></script>
-<link rel="icon" type="image/png" sizes="32x32" href="https://pocketmusic.qzz.io/icon.png">
-<link rel="shortcut icon" href="https://pocketmusic.qzz.io/icon.png">
-<link rel="apple-touch-icon" href="https://pocketmusic.qzz.io/icon.png">
+    <meta property="og:title" content="Pocket Music">
+    <meta property="og:description" content="Listen Music Online">
+    <meta property="og:image" content="https://pocketmusic.qzz.io/icon.png">
 
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#000;
-  color:white;
-}
+    <link rel="icon" href="https://pocketmusic.qzz.io/icon.png">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1655942962729576" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: system-ui;
+        }
 
-/* HEADER */
-.header{padding:10px;}
-.header input{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:10px;
-  background:#1c1c1c;
-  color:white;
-}
+        .header {
+            position: sticky;
+            top: 0;
+            background: #000;
+            padding: 15px;
+            z-index: 100;
+        }
 
-#suggestions{
-  background:#111;
-  border-radius:10px;
-  margin-top:5px;
-}
-.sugg{
-  display:flex;
-  padding:8px;
-  cursor:pointer;
-}
-.sugg img{
-  width:40px;
-  height:40px;
-  border-radius:6px;
-  margin-right:10px;
-}
+        .header input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 15px;
+            background: #181818;
+            color: white;
+            box-sizing: border-box;
+        }
 
-/* SONG LIST */
-.row{
-  display:flex;
-  overflow-x:auto;
-  gap:10px;
-  padding:10px;
-}
-.card{
-  min-width:140px;
-  background:#181818;
-  border-radius:10px;
-  overflow:hidden;
-  cursor:pointer;
-}
-.card img{
-  width:100%;
-  height:110px;
-  object-fit:cover;
-}
+        .row {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 10px;
+        }
 
-/* FULL PLAYER */
-.full{
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-.full img{
-  width:250px;
-  border-radius:20px;
-}
+        .card {
+            min-width: 160px;
+            background: #181818;
+            border-radius: 15px;
+            overflow: hidden;
+        }
 
-/* MINI PLAYER */
-.mini{
-  position:fixed;
-  bottom:60px;
-  left:10px;
-  right:10px;
-  background:#181818;
-  padding:10px;
-  border-radius:10px;
-  display:none;
-}
-</style>
+        .card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .full {
+            position: fixed;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(#222, #000);
+            z-index: 9999;
+        }
+
+        .full img {
+            width: 280px;
+            height: 280px;
+            border-radius: 20px;
+            object-fit: cover;
+        }
+
+        .mini {
+            position: fixed;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            display: none;
+            background: #181818;
+            border-radius: 15px;
+            padding: 10px;
+            z-index: 9999;
+        }
+
+        .sugg {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #222;
+        }
+
+        .sugg img {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1655942962729576"
-     crossorigin="anonymous"></script>
-<ins class="adsbygoogle"
-     style="display:block"
-     data-ad-format="fluid"
-     data-ad-layout-key="-ey+f-1k-38+bw"
-     data-ad-client="ca-pub-1655942962729576"
-     data-ad-slot="8926585630"></ins>
-<script>
-     (adsbygoogle = window.adsbygoogle || []).push({});
-</script>
-     
-<!-- HEADER -->
-<div class="header">
-  <img src="/icon.png" style="width:50px;height:50px;border-radius:10px;">
-    <h2 style="margin:0;">Pocket Music</h2>
-    <a href="contact.html">Contact</a>
-  <input id="search" placeholder="Search..." oninput="liveSearch()">
-  <div id="suggestions"></div>
-</div>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1655942962729576" crossorigin="anonymous"></script>
+    <ins class="adsbygoogle" style="display:block" data-ad-format="fluid" data-ad-layout-key="-ey+f-1k-38+bw" data-ad-client="ca-pub-1655942962729576" data-ad-slot="8926585630"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
 
-<!-- HOME -->
-<div id="home"></div>
 
-<!-- FULL PLAYER -->
-<div class="full" id="fullPlayer">
-  <img id="fimg">
-  <h2 id="fname"></h2>
-  <h3 id="fdescription"></h3>
-  <audio id="audio" controls></audio>
-
-    <div style="margin-top:20px">
-    <button onclick="minimize()">⬇️</button>
-    <button onclick="closeAll()">❌</button>
-    </div>
-</div>
-
-<!-- MINI PLAYER -->
-<div class="mini" id="miniPlayer">
-  <div style="display:flex;align-items:center;gap:10px;">
-    <img id="mimg"
-    style="width:55px;height:55px;border-radius:10px;object-fit:cover">
-
-    <div style="flex:1">
-      <div id="mname"></div>
+    <!-- HEADER -->
+    <div class="header">
+        <img src="https://pocketmusic.qzz.io/icon.png" style="width:50px;height:50px;border-radius:10px;">
+        <h2 style="margin:0;">Pocket Music</h2>
+        <a href="contact.html">Contact</a>
+        <input id="search" placeholder="Search..." oninput="liveSearch()">
+        <div id="suggestions"></div>
     </div>
 
-    <button onclick="togglePlay()">
-      ▶️
-    </button>
-       <button onclick="closeAll()">❌</button>
-  </div>
-</div>
-     
 
-<!-- FIREBASE -->
-<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+    <!-- HOME -->
+    <div id="home"></div>
 
-<script>
-const firebaseConfig = {
- apiKey: "AIzaSyAnSBnETllDLMB47EKg8zSCKQcAycSZu7k",
-  authDomain: "pocketamusic.firebaseapp.com",
-  databaseURL: "https://pocketamusic-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "pocketamusic",
-  storageBucket: "pocketamusic.firebasestorage.app",
-  messagingSenderId: "54287365789",
-  appId: "1:54287365789:web:a4faba0305edfeb4f94674"
-};
+    <!-- FULL PLAYER -->
+    <div class="full" id="fullPlayer">
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+        <img id="fimg">
 
-let songs = [];
-let categories = [];
-function togglePlay(){
-  if(audio.paused) audio.play();
-  else audio.pause();
-     }
-     
-/* LOAD DATA (REALTIME) */
-function load(){
+        <h2 id="fname"></h2>
 
-  db.ref("categories").on("value", snap=>{
-    categories = snap.val() || [];
-    render();
-  });
+        <h3 id="fdescription"></h3>
 
-  db.ref("songs").on("value", snap=>{
-    let data = snap.val() || {};
-    songs = Object.values(data);
-    render();
-  });
+        <audio id="audio" controls></audio>
 
-}
+        <div style="margin-top:20px">
+            <button onclick="minimize()">⬇️</button>
+            <button onclick="closeAll()">❌</button>
+        </div>
 
-/* RENDER */
-function render(list=null,q=""){
-  let d = list || songs;
-  home.innerHTML = "";
+    </div>
 
-  categories.forEach(cat=>{
-    let s = d.filter(x=>x.category==cat);
-    if(!s.length) return;
+    <!-- MINI PLAYER -->
+    <div class="mini" id="miniPlayer">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <img id="mimg" style="width:55px;height:55px;border-radius:10px;object-fit:cover">
 
-    let rowId = "row_" + cat.replace(/\s+/g,"_");
+            <div style="flex:1">
+                <div id="mname"></div>
+            </div>
 
-    home.innerHTML += `
+            <button onclick="togglePlay()">
+                ▶️
+            </button>
+        </div>
+    </div>
+
+    <!-- FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnSBnETllDLMB47EKg8zSCKQcAycSZu7k",
+            authDomain: "pocketamusic.firebaseapp.com",
+            databaseURL: "https://pocketamusic-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "pocketamusic",
+            storageBucket: "pocketamusic.firebasestorage.app",
+            messagingSenderId: "54287365789",
+            appId: "1:54287365789:web:a4faba0305edfeb4f94674"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let songs = [];
+        let categories = [];
+
+        /* LOAD DATA (REALTIME) */
+        function load() {
+
+            db.ref("categories").on("value", snap => {
+                categories = snap.val() || [];
+                render();
+            });
+
+            db.ref("songs").on("value", snap => {
+                let data = snap.val() || {};
+                songs = Object.values(data);
+                render();
+            });
+
+        }
+
+        /* RENDER */
+        function render(list = null, q = "") {
+            let d = list || songs;
+            home.innerHTML = "";
+
+            categories.forEach(cat => {
+                let s = d.filter(x => x.category == cat);
+                if (!s.length) return;
+
+                let rowId = "row_" + cat.replace(/\s+/g, "_");
+
+                home.innerHTML += `
 
 <div style="
 display:flex;
@@ -235,87 +235,88 @@ ${s.map(x=>`
 </div>
 
 `;
- });   
-}
+            });
+        }
 
-/* PLAY */
-function playSong(s){
-  fullPlayer.style.display="flex";
+        /* PLAY */
+        function playSong(s) {
+            fullPlayer.style.display = "flex";
 
-  fimg.src=s.image;
-  fname.innerText=s.name;
-  fdescription.innerText=s.singer;
-  audio.src=s.music;
-  audio.play();
+            fimg.src = s.image;
+            fname.innerText = s.name;
+            fdescription.innerText = s.singer;
+            audio.src = s.music;
+            audio.play();
 
-  miniPlayer.style.display="none";
-}
+            miniPlayer.style.display = "none";
+        }
 
-/* MINIMIZE */
-function minimize(){
-  fullPlayer.style.display="none";
-  miniPlayer.style.display="block";
+        /* MINIMIZE */
+        function minimize() {
+            fullPlayer.style.display = "none";
+            miniPlayer.style.display = "block";
 
-  mimg.src=fimg.src;
-  mname.innerText=fname.innerText;
-audio.onplay=()=>{
-  document.querySelector(".mini button").innerHTML="⏸";
-};
+            mimg.src = fimg.src;
+            mname.innerText = fname.innerText;
+            audio.onplay = () => {
+                document.querySelector(".mini button").innerHTML = "⏸";
+            };
 
-audio.onpause=()=>{
-  document.querySelector(".mini button").innerHTML="▶️";
-};
-     }
-/* CLOSE */
-function closeAll(){
-  audio.pause();
-  audio.currentTime=0;
+            audio.onpause = () => {
+                document.querySelector(".mini button").innerHTML = "▶️";
+            };
+        }
 
-  fullPlayer.style.display="none";
-  miniPlayer.style.display="none";
-}
+        /* CLOSE */
+        function closeAll() {
+            audio.pause();
+            audio.currentTime = 0;
 
-/* PLAY PAUSE */
-function togglePlay(){
-  if(audio.paused) audio.play();
-  else audio.pause();
-}
+            fullPlayer.style.display = "none";
+            miniPlayer.style.display = "none";
+        }
 
-/* SEARCH */
-function liveSearch(){
+        /* PLAY PAUSE */
+        function togglePlay() {
+            if (audio.paused) audio.play();
+            else audio.pause();
+        }
 
-  let q = search.value.trim().toLowerCase();
+        /* SEARCH */
+        function liveSearch() {
 
-  suggestions.innerHTML = "";
+            let q = search.value.trim().toLowerCase();
 
-  if(!q){
-    return;
-  }
+            suggestions.innerHTML = "";
 
-  let results = songs
-    .filter(song =>
-      song.name.toLowerCase().includes(q)
-    )
-    .sort((a,b)=>{
+            if (!q) {
+                return;
+            }
 
-      let aStarts = a.name.toLowerCase().startsWith(q);
-      let bStarts = b.name.toLowerCase().startsWith(q);
+            let results = songs
+                .filter(song =>
+                    song.name.toLowerCase().includes(q)
+                )
+                .sort((a, b) => {
 
-      if(aStarts && !bStarts) return -1;
-      if(!aStarts && bStarts) return 1;
+                    let aStarts = a.name.toLowerCase().startsWith(q);
+                    let bStarts = b.name.toLowerCase().startsWith(q);
 
-      return a.name.localeCompare(b.name);
+                    if (aStarts && !bStarts) return -1;
+                    if (!aStarts && bStarts) return 1;
 
-    });
+                    return a.name.localeCompare(b.name);
 
-  results.forEach(song=>{
+                });
 
-    let highlighted = song.name.replace(
-      new RegExp(q,"gi"),
-      match => `<span style="color:#1db954;font-weight:bold">${match}</span>`
-    );
+            results.forEach(song => {
 
-    suggestions.innerHTML += `
+                let highlighted = song.name.replace(
+                    new RegExp(q, "gi"),
+                    match => `<span style="color:#1db954;font-weight:bold">${match}</span>`
+                );
+
+                suggestions.innerHTML += `
       <div class="sugg" onclick='playSong(${JSON.stringify(song)})'>
         <img src="${song.image}">
         <div>
@@ -324,32 +325,33 @@ function liveSearch(){
         </div>
       </div>
     `;
-  });
+            });
 
-     }
-/*scroll */
-function slideLeft(id){
-  document.getElementById(id).scrollBy({
-    left:-300,
-    behavior:"smooth"
-  });
-}
+        }
+        /*scroll */
+        function slideLeft(id) {
+            document.getElementById(id).scrollBy({
+                left: -300,
+                behavior: "smooth"
+            });
+        }
 
-function slideRight(id){
-  document.getElementById(id).scrollBy({
-    left:300,
-    behavior:"smooth"
-  });
-}
-/* CLICK MINI OPEN FULL */
-miniPlayer.onclick = function(e){
-  if(e.target.tagName === "BUTTON") return;
-  miniPlayer.style.display="none";
-  fullPlayer.style.display="flex";
-}
+        function slideRight(id) {
+            document.getElementById(id).scrollBy({
+                left: 300,
+                behavior: "smooth"
+            });
+        }
+        /* CLICK MINI OPEN FULL */
+        miniPlayer.onclick = function(e) {
+            if (e.target.tagName === "BUTTON") return;
+            miniPlayer.style.display = "none";
+            fullPlayer.style.display = "flex";
+        }
 
-load();
-</script>
+        load();
+    </script>
 
 </body>
-     </html>
+
+</html>
