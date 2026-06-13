@@ -139,11 +139,20 @@ body{
 
 <!-- MINI PLAYER -->
 <div class="mini" id="miniPlayer">
-  <img id="mimg" style="width:50px;height:50px;border-radius:8px;">
-  <span id="mname"></span>
-  <button onclick="togglePlay()">▶/⏸</button>
-  <button onclick="closeAll()">❌</button>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <img id="mimg"
+    style="width:55px;height:55px;border-radius:10px;object-fit:cover">
+
+    <div style="flex:1">
+      <div id="mname"></div>
+    </div>
+
+    <button onclick="togglePlay()">
+      ▶️
+    </button>
+  </div>
 </div>
+     
 
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
@@ -165,7 +174,11 @@ const db = firebase.database();
 
 let songs = [];
 let categories = [];
-
+function togglePlay(){
+  if(audio.paused) audio.play();
+  else audio.pause();
+     }
+     
 /* LOAD DATA (REALTIME) */
 function load(){
 
@@ -244,8 +257,14 @@ function minimize(){
 
   mimg.src=fimg.src;
   mname.innerText=fname.innerText;
-}
+audio.onplay=()=>{
+  document.querySelector(".mini button").innerHTML="⏸";
+};
 
+audio.onpause=()=>{
+  document.querySelector(".mini button").innerHTML="▶️";
+};
+     }
 /* CLOSE */
 function closeAll(){
   audio.pause();
