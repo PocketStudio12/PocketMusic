@@ -191,17 +191,34 @@ function render(list=null,q=""){
     let rowId = "row_" + cat.replace(/\s+/g,"_");
 
     home.innerHTML += `
-      <h3 style="padding:0 10px">${cat}</h3>
-      <div class="row" id="${rowId}">
-        ${s.map(x=>`
-          <div class="card" onclick='playSong(${JSON.stringify(x)})'>
-            <img src="${x.image}">
-            <div style="padding:5px">${x.name}</div>
-          </div>
-        `).join("")}
-      </div>
-    `;
-  });
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 10px;
+">
+
+<h3>${cat}</h3>
+
+<div>
+<button onclick="slideLeft('${rowId}')">⬅️</button>
+<button onclick="slideRight('${rowId}')">➡️</button>
+</div>
+
+</div>
+
+<div class="row" id="${rowId}">
+${s.map(x=>`
+<div class="card" onclick='playSong(${JSON.stringify(x)})'>
+<img src="${x.image}">
+<div style="padding:5px">${x.name}</div>
+</div>
+`).join("")}
+</div>
+
+`;
+    
 }
 
 /* PLAY */
@@ -249,7 +266,20 @@ function liveSearch(){
 
   render(f);
 }
+/*scroll */
+function slideLeft(id){
+  document.getElementById(id).scrollBy({
+    left:-300,
+    behavior:"smooth"
+  });
+}
 
+function slideRight(id){
+  document.getElementById(id).scrollBy({
+    left:300,
+    behavior:"smooth"
+  });
+}
 /* CLICK MINI OPEN FULL */
 miniPlayer.onclick = function(e){
   if(e.target.tagName === "BUTTON") return;
