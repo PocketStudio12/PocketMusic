@@ -261,12 +261,50 @@ function togglePlay(){
 
 /* SEARCH */
 function liveSearch(){
-  let q = search.value.toLowerCase();
 
-  let f = songs.filter(s=>s.name.toLowerCase().includes(q));
+  let q = search.value.trim().toLowerCase();
 
-  render(f);
-}
+  suggestions.innerHTML = "";
+
+  if(!q){
+    return;
+  }
+
+  let results = songs
+    .filter(song =>
+      song.name.toLowerCase().includes(q)
+    )
+    .sort((a,b)=>{
+
+      let aStarts = a.name.toLowerCase().startsWith(q);
+      let bStarts = b.name.toLowerCase().startsWith(q);
+
+      if(aStarts && !bStarts) return -1;
+      if(!aStarts && bStarts) return 1;
+
+      return a.name.localeCompare(b.name);
+
+    });
+
+  results.forEach(song=>{
+
+    let highlighted = song.name.replace(
+      new RegExp(q,"gi"),
+      match => `<span style="color:#1db954;font-weight:bold">${match}</span>`
+    );
+
+    suggestions.innerHTML += `
+      <div class="sugg" onclick='playSong(${JSON.stringify(song)})'>
+        <img src="${song.image}">
+        <div>
+          <div>${highlighted}</div>
+          <small>${song.singer || ""}</small>
+        </div>
+      </div>
+    `;
+  });
+
+     }
 /*scroll */
 function slideLeft(id){
   document.getElementById(id).scrollBy({
