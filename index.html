@@ -151,6 +151,7 @@
         <audio id="audio" controls></audio>
 
         <div style="margin-top:20px">
+            <button onclick="shareSong()">📤 Share</button>
             <button onclick="minimize()">⬇️</button>
             <button onclick="closeAll()">❌</button>
         </div>
@@ -206,6 +207,7 @@
                 let data = snap.val() || {};
                 songs = Object.values(data);
                 render();
+                openSharedSong()
             });
 
         }
@@ -275,6 +277,27 @@ function playSong(s) {
 
     miniPlayer.style.display = "none";
 }
+        /* Share */
+        function shareSong() {
+
+    if (!currentSong) return;
+
+    const url = location.href;
+
+    if (typeof navigator.share === "function") {
+
+        navigator.share({
+            title: currentSong.name,
+            text: currentSong.name + " - " + currentSong.singer,
+            url: url
+        });
+
+    } else {
+
+        navigator.clipboard.writeText(url);
+        alert("Song link copied!");
+    }
+        }
 
         /* MINIMIZE */
         function minimize() {
@@ -389,6 +412,23 @@ function playSong(s) {
             if (e.target.tagName === "BUTTON") return;
             miniPlayer.style.display = "none";
             fullPlayer.style.display = "flex";
+        }
+        /* Open Share Song*/
+        function openSharedSong() {
+
+    const songName =
+        new URLSearchParams(location.search)
+        .get("song");
+
+    if (!songName) return;
+
+    const song = songs.find(
+        x => x.name === decodeURIComponent(songName)
+    );
+
+    if (song) {
+        playSong(song);
+    }
         }
 
         load();
