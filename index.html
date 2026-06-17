@@ -253,17 +253,28 @@ ${s.map(x=>`
         }
 
         /* PLAY */
-        function playSong(s) {
-            fullPlayer.style.display = "flex";
+        let currentSong = null;
 
-            fimg.src = s.image;
-            fname.innerText = s.name;
-            fdescription.innerText = s.singer;
-            audio.src = s.music;
-            audio.play();
+function playSong(s) {
 
-            miniPlayer.style.display = "none";
-        }
+    currentSong = s;
+
+    history.replaceState(
+        {},
+        "",
+        "?song=" + encodeURIComponent(s.name)
+    );
+
+    fullPlayer.style.display = "flex";
+
+    fimg.src = s.image;
+    fname.innerText = s.name;
+    fdescription.innerText = s.singer;
+    audio.src = s.music;
+    audio.play();
+
+    miniPlayer.style.display = "none";
+}
 
         /* MINIMIZE */
         function minimize() {
