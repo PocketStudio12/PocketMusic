@@ -334,12 +334,22 @@ function playSong(s) {
 
         /* CLOSE */
         function closeAll() {
-            audio.pause();
-            audio.currentTime = 0;
 
-            fullPlayer.style.display = "none";
-            miniPlayer.style.display = "none";
-        }
+    audio.pause();
+    audio.currentTime = 0;
+
+    fullPlayer.style.display = "none";
+    miniPlayer.style.display = "none";
+
+    currentSong = null;
+
+    history.replaceState(
+        {},
+        "",
+        location.pathname
+    );
+
+    }
 
         /* PLAY PAUSE */
         function togglePlay() {
