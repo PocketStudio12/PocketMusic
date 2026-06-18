@@ -216,6 +216,12 @@
     openSharedSong();
 
 });
+            songs = Object.entries(data).map(([key, song]) => ({
+    ...song,
+    id: key
+}));
+
+console.log(songs);
 }
 
         /* RENDER */
