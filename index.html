@@ -208,12 +208,10 @@
     const data = snap.val() || {};
 
     
-            songs = Object.entries(data).map(([key, song]) => ({
-    ...song,
-    id: key
-}));
-
-alert(songs);
+            songs = Object.values(data);
+                render();
+                openSharedSong();
+            });
 }
 
         /* RENDER */
