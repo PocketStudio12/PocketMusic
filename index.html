@@ -204,13 +204,19 @@
             });
 
             db.ref("songs").on("value", snap => {
-                let data = snap.val() || {};
-                songs = Object.values(data);
-                render();
-                openSharedSong()
-            });
 
-        }
+    let data = snap.val() || {};
+
+    songs = Object.entries(data).map(([id, song]) => ({
+        id: id,
+        ...song
+    }));
+
+    render();
+    openSharedSong();
+
+});
+}
 
         /* RENDER */
         function render(list = null, q = "") {
@@ -264,7 +270,7 @@ function playSong(s) {
     history.replaceState(
     {},
     "",
-    "?song=" + s.id
+    "?song=" + encodeURIComponent(s.id)
 );
 
     fullPlayer.style.display = "flex";
@@ -283,10 +289,10 @@ function playSong(s) {
     if (!currentSong) return;
 
     const url =
-        location.origin +
-        location.pathname +
-        "?song=" +
-        currentSong.id;
+    location.origin +
+    location.pathname +
+    "?song=" +
+    encodeURIComponent(currentSong.id);
 
     if (typeof navigator.share === "function") {
 
@@ -428,23 +434,11 @@ function playSong(s) {
             fullPlayer.style.display = "flex";
         }
         /* Open Share Song*/
-        function openSharedSong() {
-
-    const songId =
-        new URLSearchParams(location.search)
-        .get("song");
-
-    if (!songId) return;
-
-    const song = songs.find(
-        x => String(x.id) === songId
-    );
-
-    if (song) {
-        playSong(song);
-    }
-
- }
+        history.replaceState(
+    {},
+    "",
+    "?song=" + encodeURIComponent(s.id)
+);
 
         load();
     </script>
