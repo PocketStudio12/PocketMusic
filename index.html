@@ -262,10 +262,10 @@ function playSong(s) {
     currentSong = s;
 
     history.replaceState(
-        {},
-        "",
-        "?song=" + encodeURIComponent(s.name)
-    );
+    {},
+    "",
+    "?song=" + s.id
+);
 
     fullPlayer.style.display = "flex";
 
@@ -430,20 +430,21 @@ function playSong(s) {
         /* Open Share Song*/
         function openSharedSong() {
 
-    const songName =
+    const songId =
         new URLSearchParams(location.search)
         .get("song");
 
-    if (!songName) return;
+    if (!songId) return;
 
     const song = songs.find(
-        x => x.name === decodeURIComponent(songName)
+        x => String(x.id) === songId
     );
 
     if (song) {
         playSong(song);
     }
-        }
+
+ }
 
         load();
     </script>
