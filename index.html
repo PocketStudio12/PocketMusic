@@ -207,11 +207,13 @@
 
     const data = snap.val() || {};
 
-    
-            songs = Object.values(data);
+songs = Object.entries(data).map(([key, song]) => ({
+    ...song,
+    id: key
+}));
                 render();
                 openSharedSong();
-            });
+});
 }
 
         /* RENDER */
@@ -430,11 +432,22 @@ function playSong(s) {
             fullPlayer.style.display = "flex";
         }
         /* Open Share Song*/
-        history.replaceState(
-    {},
-    "",
-    "?song=" + encodeURIComponent(s.id)
-);
+        function openSharedSong() {
+
+    const songId =
+        new URLSearchParams(location.search)
+        .get("song");
+
+    if (!songId) return;
+
+    const song = songs.find(
+        x => x.id === songId
+    );
+
+    if (song) {
+        playSong(song);
+    }
+        }
 
         load();
     </script>
