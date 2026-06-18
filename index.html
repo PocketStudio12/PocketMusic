@@ -207,21 +207,13 @@
 
     const data = snap.val() || {};
 
-    songs = Object.entries(data).map(([key, song]) => ({
-        ...song,
-        id: key
-    }));
-
-    render();
-    openSharedSong();
-
-});
+    
             songs = Object.entries(data).map(([key, song]) => ({
     ...song,
     id: key
 }));
 
-console.log(songs);
+alert(songs);
 }
 
         /* RENDER */
