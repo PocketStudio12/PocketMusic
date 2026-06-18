@@ -282,7 +282,11 @@ function playSong(s) {
 
     if (!currentSong) return;
 
-    const url = location.href;
+    const url =
+        location.origin +
+        location.pathname +
+        "?song=" +
+        currentSong.id;
 
     if (typeof navigator.share === "function") {
 
@@ -297,7 +301,7 @@ function playSong(s) {
         navigator.clipboard.writeText(url);
         alert("Song link copied!");
     }
-        }
+         }
 
         /* MINIMIZE */
         function minimize() {
