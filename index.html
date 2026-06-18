@@ -205,11 +205,11 @@
 
             db.ref("songs").on("value", snap => {
 
-    let data = snap.val() || {};
+    const data = snap.val() || {};
 
-    songs = Object.entries(data).map(([id, song]) => ({
-        id: id,
-        ...song
+    songs = Object.entries(data).map(([key, song]) => ({
+        ...song,
+        id: key
     }));
 
     render();
