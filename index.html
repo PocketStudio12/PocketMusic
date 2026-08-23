@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <script>
+<script>
 const ANALYTICS_SERVER = "https://api.pocketstudio.qzz.io";
 
 const visitorId =
@@ -56,7 +56,6 @@ fetch(ANALYTICS_SERVER + "/track", {
     },
     body: JSON.stringify({
         id: visitorId,
-
         page: location.pathname,
         referrer: document.referrer || "direct",
 
@@ -64,7 +63,6 @@ fetch(ANALYTICS_SERVER + "/track", {
         browserVersion: browserVersion,
 
         os: os,
-
         device: device,
 
         screenWidth: screen.width,
@@ -77,9 +75,21 @@ fetch(ANALYTICS_SERVER + "/track", {
 
         userAgent: navigator.userAgent
     })
+})
+.then(async response => {
+
+    const text = await response.text();
+
+    console.log("Analytics status:", response.status);
+    console.log("Analytics response:", text);
+
+})
+.catch(error => {
+
+    console.error("Analytics ERROR:", error);
+
 });
 </script>
-
     
     <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DNHZPKYLED"></script>
@@ -100,12 +110,6 @@ fetch(ANALYTICS_SERVER + "/track", {
     <meta property="og:image" content="https://pocketmusic.qzz.io/icon.png">
 
     <link rel="icon" href="https://pocketmusic.qzz.io/icon.png">
-
-    <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1655942962729576"
-        crossorigin="anonymous">
-    </script>
 
     <style>
 
