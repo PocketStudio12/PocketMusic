@@ -1,0 +1,3903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Playlist - Pocket Music</title>
+
+<link
+    rel="icon"
+    href="https://pocketmusic.qzz.io/icon.png"
+>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+
+<style>
+
+/* =========================================
+   RESET
+========================================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    background:#080b12;
+    color:white;
+    min-height:100vh;
+    padding-bottom:82px;
+}
+
+button{
+    font-family:inherit;
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header{
+    padding:18px 15px;
+    text-align:center;
+
+    font-size:23px;
+    font-weight:bold;
+
+    border-bottom:1px solid #202633;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+
+    background:#080b12;
+}
+
+.header img{
+    width:38px;
+    height:38px;
+    border-radius:9px;
+}
+
+
+/* =========================================
+   CONTAINER
+========================================= */
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    padding:20px 15px;
+}
+
+
+/* =========================================
+   SECTION
+========================================= */
+
+.playlist-section{
+    margin-bottom:30px;
+}
+
+.section-title-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    margin:8px 0 12px;
+}
+
+.section-title{
+    font-size:21px;
+    font-weight:bold;
+}
+
+
+/* =========================================
+   CREATE BUTTON
+========================================= */
+
+.create-btn{
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+    border-radius:13px;
+
+    background:#4169e1;
+    color:white;
+
+    font-size:16px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    margin-bottom:25px;
+}
+
+.create-btn:active{
+    transform:scale(.98);
+}
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+.search-wrapper{
+    position:relative;
+    width:100%;
+
+    margin-bottom:14px;
+}
+
+.playlist-search{
+    width:100%;
+
+    padding:14px 45px 14px 44px;
+
+    background:#111722;
+
+    border:1px solid #293344;
+
+    color:white;
+
+    border-radius:13px;
+
+    outline:none;
+
+    font-size:14px;
+}
+
+.playlist-search::placeholder{
+    color:#788294;
+}
+
+.playlist-search:focus{
+    border-color:#557cf0;
+}
+
+.search-icon{
+    position:absolute;
+
+    left:15px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    color:#8994a6;
+
+    font-size:17px;
+
+    pointer-events:none;
+}
+
+.clear-search{
+    position:absolute;
+
+    right:9px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:31px;
+    height:31px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#293241;
+
+    color:#b5bdc9;
+
+    cursor:pointer;
+
+    display:none;
+
+    align-items:center;
+    justify-content:center;
+
+    font-size:17px;
+}
+
+.clear-search.show{
+    display:flex;
+}
+
+
+/* =========================================
+   HORIZONTAL PLAYLIST ROW
+========================================= */
+
+.playlist-list{
+
+    display:flex;
+
+    flex-direction:row;
+
+    flex-wrap:nowrap;
+
+    gap:15px;
+
+    width:100%;
+
+    overflow-x:auto;
+    overflow-y:hidden;
+
+    padding:3px 2px 14px;
+
+    -webkit-overflow-scrolling:touch;
+
+    scroll-behavior:smooth;
+
+    scroll-snap-type:x proximity;
+
+    overscroll-behavior-x:contain;
+
+    scrollbar-width:none;
+}
+
+.playlist-list::-webkit-scrollbar{
+    display:none;
+}
+
+
+/* =========================================
+   PLAYLIST CARD
+========================================= */
+
+.playlist-card{
+
+    flex:0 0 150px;
+
+    width:150px;
+
+    min-width:150px;
+
+    cursor:pointer;
+
+    scroll-snap-align:start;
+
+    transition:transform .15s ease;
+}
+
+.playlist-card:active{
+    transform:scale(.96);
+}
+
+
+/* =========================================
+   PLAYLIST IMAGE
+========================================= */
+
+.playlist-image-wrapper{
+
+    width:150px;
+    height:150px;
+
+    border-radius:13px;
+
+    overflow:hidden;
+
+    background:#171e29;
+
+    position:relative;
+}
+
+.playlist-image{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+    background:#171e29;
+}
+
+
+/* =========================================
+   PLAY ICON
+========================================= */
+
+.playlist-play-icon{
+
+    position:absolute;
+
+    right:8px;
+    bottom:8px;
+
+    width:36px;
+    height:36px;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.72);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:15px;
+
+    opacity:0;
+
+    transition:.15s;
+}
+
+.playlist-card:hover
+.playlist-play-icon{
+
+    opacity:1;
+}
+
+
+/* =========================================
+   PLAYLIST INFO
+========================================= */
+
+.playlist-info{
+
+    padding:8px 2px 0;
+
+    min-width:0;
+}
+
+.playlist-name{
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.playlist-count{
+
+    color:#8d97a8;
+
+    font-size:12px;
+
+    margin-top:5px;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.empty{
+
+    width:100%;
+
+    color:#7f8999;
+
+    background:#101620;
+
+    border-radius:12px;
+
+    padding:22px;
+
+    text-align:center;
+
+    font-size:14px;
+}
+
+
+/*
+   Important:
+   Empty message should take the whole row.
+*/
+
+.playlist-list > .empty{
+
+    flex:1 0 100%;
+
+    min-width:100%;
+}
+
+
+/* =========================================
+   LOGIN MESSAGE
+========================================= */
+
+.login-message{
+
+    background:#111722;
+
+    border:1px solid #273143;
+
+    border-radius:15px;
+
+    padding:20px;
+
+    text-align:center;
+
+    margin-bottom:15px;
+}
+
+.login-message p{
+
+    color:#9aa4b4;
+
+    font-size:14px;
+
+    margin-bottom:14px;
+}
+
+.login-btn{
+
+    display:inline-block;
+
+    text-decoration:none;
+
+    background:#4169e1;
+
+    color:white;
+
+    padding:11px 20px;
+
+    border-radius:9px;
+
+    font-weight:bold;
+}
+
+
+/* =========================================
+   CREATE PAGE
+========================================= */
+
+#createPage{
+    display:none;
+}
+
+.create-card{
+
+    background:#111722;
+
+    border:1px solid #222c3b;
+
+    border-radius:16px;
+
+    padding:18px;
+}
+
+.create-title{
+
+    font-size:22px;
+
+    margin-bottom:18px;
+}
+
+input{
+
+    width:100%;
+
+    padding:14px;
+
+    background:#080c13;
+
+    border:1px solid #293344;
+
+    color:white;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:15px;
+
+    margin-bottom:12px;
+}
+
+input:focus{
+
+    border-color:#557cf0;
+}
+
+.select-title{
+
+    font-size:18px;
+
+    font-weight:bold;
+
+    margin:20px 0 10px;
+}
+
+
+/* =========================================
+   SONG RESULTS
+========================================= */
+
+.song-results{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    max-height:390px;
+
+    overflow-y:auto;
+}
+
+.song-result{
+
+    background:#171e2a;
+
+    border:1px solid #252f40;
+
+    border-radius:11px;
+
+    padding:8px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+}
+
+.song-result img{
+
+    width:48px;
+    height:48px;
+
+    object-fit:cover;
+
+    border-radius:8px;
+
+    background:#222;
+}
+
+.song-result-info{
+
+    flex:1;
+
+    min-width:0;
+}
+
+.song-result-name{
+
+    font-weight:bold;
+
+    font-size:14px;
+
+    white-space:nowrap;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+}
+
+.song-result-singer{
+
+    color:#8f99a9;
+
+    font-size:12px;
+
+    margin-top:3px;
+}
+
+.add-btn,
+.remove-btn{
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:8px 11px;
+
+    color:white;
+
+    cursor:pointer;
+
+    white-space:nowrap;
+}
+
+.add-btn{
+
+    background:#3158cf;
+}
+
+.remove-btn{
+
+    background:#702b34;
+}
+
+
+/* =========================================
+   SELECTED SONGS
+========================================= */
+
+.selected-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+}
+
+.selected-song{
+
+    background:#171e2a;
+
+    border-radius:10px;
+
+    padding:8px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+}
+
+.selected-song img{
+
+    width:45px;
+    height:45px;
+
+    object-fit:cover;
+
+    border-radius:7px;
+}
+
+.selected-song-info{
+
+    flex:1;
+
+    min-width:0;
+}
+
+.selected-song-name{
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.selected-song-singer{
+
+    color:#8993a3;
+
+    font-size:12px;
+
+    margin-top:3px;
+}
+
+
+/* =========================================
+   CREATE ACTIONS
+========================================= */
+
+.create-actions{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:20px;
+}
+
+.save-btn,
+.cancel-btn{
+
+    flex:1;
+
+    padding:13px;
+
+    border:none;
+
+    border-radius:10px;
+
+    color:white;
+
+    font-size:15px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.save-btn{
+
+    background:#4169e1;
+}
+
+.cancel-btn{
+
+    background:#252e3d;
+}
+
+
+/* =========================================
+   PLAYER
+========================================= */
+
+#playerPage{
+    display:none;
+}
+
+.player-page{
+    width:100%;
+}
+
+.player-top{
+    text-align:center;
+}
+
+.player-image{
+
+    width:min(85vw,430px);
+
+    height:min(85vw,430px);
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    background:#161d29;
+
+    display:block;
+
+    margin:5px auto 18px;
+}
+
+.current-name{
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    padding:0 10px;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.current-singer{
+
+    color:#929dad;
+
+    font-size:14px;
+
+    margin-top:7px;
+
+    padding:0 10px;
+}
+
+.audio-box{
+
+    width:100%;
+
+    margin-top:17px;
+}
+
+audio{
+
+    width:100%;
+}
+
+.player-actions{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-top:15px;
+}
+
+.player-action{
+
+    flex:1;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:13px 8px;
+
+    background:#1a2230;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    font-weight:bold;
+}
+
+.minimize-action{
+
+    background:#3158cf;
+}
+
+.close-action{
+
+    background:#702b34;
+}
+
+
+/* =========================================
+   PLAYER SONG LIST
+========================================= */
+
+.player-list-title{
+
+    font-size:19px;
+
+    font-weight:bold;
+
+    margin:25px 0 10px;
+}
+
+.player-song-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+}
+
+.player-song{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    background:#111722;
+
+    border:1px solid #202a39;
+
+    border-radius:11px;
+
+    padding:8px;
+
+    cursor:pointer;
+}
+
+.player-song.active{
+
+    border-color:#4169e1;
+
+    background:#17213a;
+}
+
+.player-song img{
+
+    width:48px;
+
+    height:48px;
+
+    border-radius:8px;
+
+    object-fit:cover;
+}
+
+.player-song-info{
+
+    flex:1;
+
+    min-width:0;
+}
+
+.player-song-name{
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.player-song-singer{
+
+    color:#8b95a5;
+
+    font-size:12px;
+
+    margin-top:3px;
+}
+
+.playing-icon{
+
+    font-size:18px;
+
+    padding:8px;
+}
+
+
+/* =========================================
+   MINI PLAYER
+========================================= */
+
+#miniPlayer{
+
+    display:none;
+
+    position:fixed;
+
+    left:10px;
+    right:10px;
+
+    bottom:77px;
+
+    height:64px;
+
+    background:#151d29;
+
+    border:1px solid #2a3547;
+
+    border-radius:14px;
+
+    z-index:900;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.45);
+
+    align-items:center;
+
+    padding:7px;
+}
+
+.mini-main{
+
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+}
+
+.mini-image{
+
+    width:50px;
+
+    height:50px;
+
+    border-radius:9px;
+
+    object-fit:cover;
+
+    background:#222;
+}
+
+.mini-info{
+
+    min-width:0;
+
+    flex:1;
+}
+
+.mini-name{
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.mini-singer{
+
+    font-size:11px;
+
+    color:#8993a4;
+
+    margin-top:3px;
+
+    overflow:hidden;
+
+    white-space:nowrap;
+
+    text-overflow:ellipsis;
+}
+
+.mini-play{
+
+    width:43px;
+
+    height:43px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#4169e1;
+
+    color:white;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    margin-right:3px;
+}
+
+
+/* =========================================
+   BOTTOM NAV
+========================================= */
+
+.bottom-nav{
+
+    position:fixed;
+
+    bottom:0;
+
+    left:0;
+
+    right:0;
+
+    height:68px;
+
+    background:#0d121b;
+
+    border-top:1px solid #202938;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    align-items:center;
+
+    z-index:1000;
+}
+
+.nav-item{
+
+    width:33.33%;
+
+    height:100%;
+
+    text-decoration:none;
+
+    color:#7f8999;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:3px;
+}
+
+.nav-item span{
+
+    font-size:22px;
+}
+
+.nav-item small{
+
+    font-size:11px;
+}
+
+.nav-item.active{
+
+    color:white;
+}
+
+
+/* =========================================
+   DESKTOP
+========================================= */
+
+@media(min-width:700px){
+
+    .container{
+
+        padding-left:22px;
+        padding-right:22px;
+    }
+
+    .playlist-card{
+
+        flex-basis:170px;
+
+        width:170px;
+
+        min-width:170px;
+    }
+
+    .playlist-image-wrapper{
+
+        width:170px;
+        height:170px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =====================================
+     HEADER
+===================================== -->
+
+<div class="header">
+
+    <img
+        src="https://pocketmusic.qzz.io/icon.png"
+        alt="Pocket Music"
+    >
+
+    Pocket Music Playlist
+
+</div>
+
+
+<main class="container">
+
+
+<!-- =====================================
+     HOME
+===================================== -->
+
+<section id="playlistHome">
+
+
+<button
+    class="create-btn"
+    onclick="startCreatePlaylist()"
+>
+    ＋ Create Playlist
+</button>
+
+
+<!-- =====================================
+     GLOBAL PLAYLIST
+===================================== -->
+
+<div class="playlist-section">
+
+    <div class="section-title-row">
+
+        <div class="section-title">
+            Global Playlist
+        </div>
+
+    </div>
+
+
+    <div class="search-wrapper">
+
+        <span class="search-icon">
+            🔍
+        </span>
+
+        <input
+            id="globalPlaylistSearch"
+            class="playlist-search"
+            type="text"
+            placeholder="Search Global Playlist..."
+            autocomplete="off"
+            oninput="searchGlobalPlaylists()"
+        >
+
+        <button
+            id="clearGlobalSearch"
+            class="clear-search"
+            onclick="clearGlobalSearch()"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div
+        id="globalPlaylists"
+        class="playlist-list"
+    >
+
+        <div class="empty">
+            Loading playlists...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================
+     MY PLAYLIST
+===================================== -->
+
+<div class="playlist-section">
+
+    <div class="section-title-row">
+
+        <div class="section-title">
+            My Playlist
+        </div>
+
+    </div>
+
+
+    <div
+        id="loginMessage"
+        class="login-message"
+    >
+
+        <p id="loginStatus">
+            Checking Login...
+        </p>
+
+        <a
+            id="loginButton"
+            href="profile.html?login=1"
+            class="login-btn"
+            style="display:none;"
+        >
+            Login
+        </a>
+
+    </div>
+
+
+    <div
+        id="mySearchWrapper"
+        class="search-wrapper"
+        style="display:none;"
+    >
+
+        <span class="search-icon">
+            🔍
+        </span>
+
+        <input
+            id="myPlaylistSearch"
+            class="playlist-search"
+            type="text"
+            placeholder="Search My Playlist..."
+            autocomplete="off"
+            oninput="searchMyPlaylists()"
+        >
+
+        <button
+            id="clearMySearch"
+            class="clear-search"
+            onclick="clearMyPlaylistSearch()"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div
+        id="myPlaylists"
+        class="playlist-list"
+    ></div>
+
+</div>
+
+
+</section>
+
+
+<!-- =====================================
+     CREATE PAGE
+===================================== -->
+
+<section id="createPage">
+
+    <div class="create-card">
+
+        <div class="create-title">
+            Create Playlist
+        </div>
+
+
+        <input
+            id="playlistName"
+            type="text"
+            placeholder="Playlist name"
+            maxlength="60"
+        >
+
+
+        <div class="select-title">
+            Select Music
+        </div>
+
+
+        <input
+            id="musicSearch"
+            type="text"
+            placeholder="Search music..."
+            autocomplete="off"
+            oninput="searchMusic()"
+        >
+
+
+        <div
+            id="songResults"
+            class="song-results"
+        >
+
+            <div class="empty">
+                Loading music...
+            </div>
+
+        </div>
+
+
+        <div class="select-title">
+            Selected Music
+        </div>
+
+
+        <div
+            id="selectedSongs"
+            class="selected-list"
+        >
+
+            <div class="empty">
+                No music selected.
+            </div>
+
+        </div>
+
+
+        <div class="create-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="cancelCreate()"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="save-btn"
+                onclick="savePlaylist()"
+            >
+                Create
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================
+     PLAYER
+===================================== -->
+
+<section id="playerPage">
+
+    <div class="player-page">
+
+        <div class="player-top">
+
+            <img
+                id="playerImage"
+                class="player-image"
+                src=""
+                alt="Song"
+            >
+
+            <div
+                id="currentSongName"
+                class="current-name"
+            >
+                -
+            </div>
+
+            <div
+                id="currentSinger"
+                class="current-singer"
+            >
+                -
+            </div>
+
+        </div>
+
+
+        <div class="audio-box">
+
+            <audio
+                id="audioPlayer"
+                controls
+                preload="metadata"
+            ></audio>
+
+        </div>
+
+
+        <div class="player-actions">
+
+            <button
+                class="player-action"
+                onclick="shareCurrentSong()"
+            >
+                ↗ Share
+            </button>
+
+            <button
+                class="player-action close-action"
+                onclick="closePlayer()"
+            >
+                ✕ Close
+            </button>
+
+            <button
+                class="player-action minimize-action"
+                onclick="minimizePlayer()"
+            >
+                ↓ Minimize
+            </button>
+
+        </div>
+
+
+        <div class="player-list-title">
+            Songs
+        </div>
+
+
+        <div
+            id="playerSongList"
+            class="player-song-list"
+        ></div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+<!-- =====================================
+     MINI PLAYER
+===================================== -->
+
+<div id="miniPlayer">
+
+    <div
+        class="mini-main"
+        onclick="restorePlayer()"
+    >
+
+        <img
+            id="miniImage"
+            class="mini-image"
+            src=""
+            alt="Song"
+        >
+
+
+        <div class="mini-info">
+
+            <div
+                id="miniName"
+                class="mini-name"
+            >
+                -
+            </div>
+
+            <div
+                id="miniSinger"
+                class="mini-singer"
+            >
+                -
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        id="miniPlayButton"
+        class="mini-play"
+        onclick="event.stopPropagation(); togglePlay()"
+    >
+        ▶
+    </button>
+
+</div>
+
+
+<!-- =====================================
+     NAV
+===================================== -->
+
+<nav class="bottom-nav">
+
+    <a
+        href="index.html"
+        class="nav-item"
+    >
+        <span>🏠</span>
+        <small>Home</small>
+    </a>
+
+
+    <a
+        href="playlist.html"
+        class="nav-item active"
+    >
+        <span>🎵</span>
+        <small>Playlist</small>
+    </a>
+
+
+    <a
+        href="profile.html"
+        class="nav-item"
+    >
+        <span>👤</span>
+        <small>Profile</small>
+    </a>
+
+</nav>
+
+
+<script>
+
+/* =========================================
+   FIREBASE
+========================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAnSBnETllDLMB47EKg8zSCKQcAycSZu7k",
+
+    authDomain:
+        "pocketamusic.firebaseapp.com",
+
+    databaseURL:
+        "https://pocketamusic-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+    projectId:
+        "pocketamusic",
+
+    storageBucket:
+        "pocketamusic.firebasestorage.app",
+
+    messagingSenderId:
+        "54287365789",
+
+    appId:
+        "1:54287365789:web:a4faba0305edfeb4f94674"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db =
+    firebase.database();
+
+const auth =
+    firebase.auth();
+
+
+/* =========================================
+   VARIABLES
+========================================= */
+
+let allSongs = [];
+
+let selectedSongIds = [];
+
+let currentPlaylist = [];
+
+let currentPlaylistName = "";
+
+let currentPlaylistId = "";
+
+let currentSongIndex = -1;
+
+let isPlayerOpen = false;
+
+let isMini = false;
+
+let songsLoadedPromise = null;
+
+let myPlaylistsData = {};
+
+let globalPlaylistsData = {};
+
+let myPlaylistListener = null;
+
+const audio =
+    document.getElementById(
+        "audioPlayer"
+    );
+
+
+/* =========================================
+   LOAD SONGS
+========================================= */
+
+function loadSongs(){
+
+    songsLoadedPromise =
+
+        db.ref("songs")
+        .once("value")
+        .then(snapshot => {
+
+            allSongs = [];
+
+            snapshot.forEach(child => {
+
+                const song =
+                    child.val() || {};
+
+                song.id =
+                    child.key;
+
+                allSongs.push(song);
+
+            });
+
+            renderSongResults();
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+            document
+                .getElementById(
+                    "songResults"
+                )
+                .innerHTML =
+                `
+                <div class="empty">
+                    Unable to load music.
+                </div>
+                `;
+
+        });
+
+    return songsLoadedPromise;
+}
+
+
+/* =========================================
+   AUTH
+========================================= */
+
+/* =========================================
+   AUTH
+========================================= */
+
+auth.onAuthStateChanged(function(user) {
+
+    console.log(
+        "Firebase Auth:",
+        user ? "LOGGED IN" : "LOGGED OUT",
+        user
+    );
+
+    const loginMessage =
+        document.getElementById("loginMessage");
+
+    const loginStatus =
+        document.getElementById("loginStatus");
+
+    const loginButton =
+        document.getElementById("loginButton");
+
+    const searchWrapper =
+        document.getElementById("mySearchWrapper");
+
+    const myPlaylists =
+        document.getElementById("myPlaylists");
+
+
+    if (user) {
+
+        /* =========================
+           USER IS LOGGED IN
+        ========================= */
+
+        console.log("loggedin true");
+
+        // Hide the entire login box
+        loginMessage.classList.add("hidden");
+
+        // Also force-hide login button
+        loginButton.style.display = "none";
+
+        // Show My Playlist search
+        searchWrapper.style.display = "block";
+
+
+        // Load user's playlists
+        loadMyPlaylists(user.uid);
+
+    }
+
+    else {
+
+        /* =========================
+           USER IS LOGGED OUT
+        ========================= */
+
+        console.log("loggedin false");
+
+        // Show login box
+        loginMessage.classList.remove("hidden");
+
+        loginMessage.style.display = "block";
+
+        // Update message
+        loginStatus.textContent =
+            "You are not logged in.";
+
+        // Show login button
+        loginButton.style.display =
+            "inline-block";
+
+        // Hide My Playlist search
+        searchWrapper.style.display =
+            "none";
+
+
+        // Clear playlists
+        myPlaylistsData = {};
+
+        myPlaylists.innerHTML = "";
+    }
+
+});
+
+/* =========================================
+   GLOBAL PLAYLISTS
+========================================= */
+
+function loadGlobalPlaylists(){
+
+    db.ref("globalPlaylists")
+    .on("value", snapshot => {
+
+        globalPlaylistsData =
+            snapshot.val() || {};
+
+        renderGlobalPlaylists();
+
+    });
+
+}
+
+
+function renderGlobalPlaylists(){
+
+    const box =
+        document.getElementById(
+            "globalPlaylists"
+        );
+
+    const input =
+        document.getElementById(
+            "globalPlaylistSearch"
+        );
+
+    const search =
+        normalizeSearch(
+            input.value
+        );
+
+
+    updateClearButton(
+        input,
+        document.getElementById(
+            "clearGlobalSearch"
+        )
+    );
+
+
+    box.innerHTML = "";
+
+    let found = 0;
+
+
+    Object.entries(
+        globalPlaylistsData
+    )
+    .reverse()
+    .forEach(([id, playlist]) => {
+
+        const name =
+            normalizeSearch(
+                playlist.name || ""
+            );
+
+
+        if(
+            search &&
+            !name.includes(search)
+        ){
+
+            return;
+
+        }
+
+
+        const songs =
+            playlist.songs
+            ? Object.keys(
+                playlist.songs
+            )
+            : [];
+
+
+        box.appendChild(
+
+            createPlaylistCard(
+                id,
+                playlist,
+                true,
+                songs.length
+            )
+
+        );
+
+
+        found++;
+
+    });
+
+
+    if(found === 0){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                ${
+                    search
+                    ? "No Global Playlist found."
+                    : "No global playlists yet."
+                }
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+function searchGlobalPlaylists(){
+
+    renderGlobalPlaylists();
+
+}
+
+
+function clearGlobalSearch(){
+
+    const input =
+        document.getElementById(
+            "globalPlaylistSearch"
+        );
+
+    input.value = "";
+
+    renderGlobalPlaylists();
+
+    input.focus();
+
+}
+
+
+/* =========================================
+   MY PLAYLISTS
+========================================= */
+
+function loadMyPlaylists(uid){
+
+    const ref =
+        db.ref(
+            "users/" +
+            uid +
+            "/playlists"
+        );
+
+
+    /*
+     * Remove an old listener if one exists.
+     */
+
+    if(myPlaylistListener){
+
+        myPlaylistListener.off();
+
+    }
+
+
+    myPlaylistListener =
+        ref.on("value", snapshot => {
+
+            /*
+             * IMPORTANT:
+             * snapshot is ONLY used here.
+             */
+
+            myPlaylistsData =
+                snapshot.val() || {};
+
+            renderMyPlaylists();
+
+        });
+
+}
+
+
+function renderMyPlaylists(){
+
+    const box =
+        document.getElementById(
+            "myPlaylists"
+        );
+
+    const input =
+        document.getElementById(
+            "myPlaylistSearch"
+        );
+
+    const search =
+        normalizeSearch(
+            input.value
+        );
+
+
+    updateClearButton(
+        input,
+        document.getElementById(
+            "clearMySearch"
+        )
+    );
+
+
+    box.innerHTML = "";
+
+    let found = 0;
+
+
+    Object.entries(
+        myPlaylistsData
+    )
+    .reverse()
+    .forEach(([id, playlist]) => {
+
+        const name =
+            normalizeSearch(
+                playlist.name || ""
+            );
+
+
+        /*
+         * SEARCH ONLY MY PLAYLISTS
+         */
+
+        if(
+            search &&
+            !name.includes(search)
+        ){
+
+            return;
+
+        }
+
+
+        const songs =
+            playlist.songs
+            ? Object.keys(
+                playlist.songs
+            )
+            : [];
+
+
+        box.appendChild(
+
+            createPlaylistCard(
+                id,
+                playlist,
+                false,
+                songs.length
+            )
+
+        );
+
+
+        found++;
+
+    });
+
+
+    if(found === 0){
+
+        box.innerHTML = `
+
+            <div class="empty">
+
+                ${
+                    search
+                    ? "No My Playlist found."
+                    : "You have no playlists yet."
+                }
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+function searchMyPlaylists(){
+
+    renderMyPlaylists();
+
+}
+
+
+function clearMyPlaylistSearch(){
+
+    const input =
+        document.getElementById(
+            "myPlaylistSearch"
+        );
+
+    input.value = "";
+
+    renderMyPlaylists();
+
+    input.focus();
+
+}
+
+
+/* =========================================
+   SEARCH HELPERS
+========================================= */
+
+function normalizeSearch(value){
+
+    return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g," ");
+
+}
+
+
+function updateClearButton(
+    input,
+    button
+){
+
+    if(!input || !button){
+
+        return;
+
+    }
+
+
+    if(
+        input.value.trim()
+    ){
+
+        button.classList.add(
+            "show"
+        );
+
+    }
+
+    else{
+
+        button.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   PLAYLIST CARD
+========================================= */
+
+function createPlaylistCard(
+    id,
+    playlist,
+    isGlobal,
+    count
+){
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "playlist-card";
+
+
+    card.onclick = function(){
+
+        openPlaylist(
+            id,
+            isGlobal
+        );
+
+    };
+
+
+    /* IMAGE WRAPPER */
+
+    const imageWrapper =
+        document.createElement(
+            "div"
+        );
+
+    imageWrapper.className =
+        "playlist-image-wrapper";
+
+
+    const image =
+        document.createElement(
+            "img"
+        );
+
+    image.className =
+        "playlist-image";
+
+
+    image.src =
+        playlist.image ||
+        "https://pocketmusic.qzz.io/icon.png";
+
+
+    image.onerror =
+        function(){
+
+            this.src =
+                "https://pocketmusic.qzz.io/icon.png";
+
+        };
+
+
+    /* PLAY ICON */
+
+    const playIcon =
+        document.createElement(
+            "div"
+        );
+
+    playIcon.className =
+        "playlist-play-icon";
+
+    playIcon.textContent =
+        "▶";
+
+
+    imageWrapper.appendChild(
+        image
+    );
+
+    imageWrapper.appendChild(
+        playIcon
+    );
+
+
+    /* INFO */
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+    info.className =
+        "playlist-info";
+
+
+    const name =
+        document.createElement(
+            "div"
+        );
+
+    name.className =
+        "playlist-name";
+
+    name.textContent =
+        playlist.name ||
+        "Untitled Playlist";
+
+
+    const songs =
+        document.createElement(
+            "div"
+        );
+
+    songs.className =
+        "playlist-count";
+
+    songs.textContent =
+        count +
+        " song" +
+        (
+            count === 1
+            ? ""
+            : "s"
+        );
+
+
+    info.appendChild(
+        name
+    );
+
+    info.appendChild(
+        songs
+    );
+
+
+    card.appendChild(
+        imageWrapper
+    );
+
+    card.appendChild(
+        info
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================
+   OPEN PLAYLIST
+========================================= */
+
+async function openPlaylist(
+    playlistId,
+    isGlobal
+){
+
+    try{
+
+        if(songsLoadedPromise){
+
+            await songsLoadedPromise;
+
+        }
+
+
+        let path;
+
+
+        if(isGlobal){
+
+            path =
+                "globalPlaylists/" +
+                playlistId;
+
+        }
+
+        else{
+
+            const user =
+                auth.currentUser;
+
+
+            if(!user){
+
+                location.href =
+                    "profile.html?login=1";
+
+                return;
+
+            }
+
+
+            path =
+                "users/" +
+                user.uid +
+                "/playlists/" +
+                playlistId;
+
+        }
+
+
+        const snapshot =
+            await db
+                .ref(path)
+                .once("value");
+
+
+        if(!snapshot.exists()){
+
+            alert(
+                "Playlist not found."
+            );
+
+            return;
+
+        }
+
+
+        const playlist =
+            snapshot.val() || {};
+
+
+        const songMap =
+            playlist.songs || {};
+
+
+        const ids =
+            Object.keys(
+                songMap
+            );
+
+
+        currentPlaylist = [];
+
+
+        ids.forEach(id => {
+
+            const song =
+                allSongs.find(
+                    item =>
+                        item.id === id
+                );
+
+
+            if(song){
+
+                currentPlaylist.push(
+                    song
+                );
+
+            }
+
+        });
+
+
+        if(
+            currentPlaylist.length === 0
+        ){
+
+            alert(
+                "This playlist has no available songs."
+            );
+
+            return;
+
+        }
+
+
+        currentPlaylistName =
+            playlist.name ||
+            "Playlist";
+
+
+        currentPlaylistId =
+            playlistId;
+
+
+        currentSongIndex = 0;
+
+        isPlayerOpen = true;
+
+        isMini = false;
+
+
+        document
+            .getElementById(
+                "miniPlayer"
+            )
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "playlistHome"
+            )
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "createPage"
+            )
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "playerPage"
+            )
+            .style.display =
+            "block";
+
+
+        renderPlayerSongList();
+
+        loadCurrentSong(false);
+
+
+        window.scrollTo({
+            top:0,
+            behavior:"instant"
+        });
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Unable to open playlist."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   LOAD CURRENT SONG
+========================================= */
+
+function loadCurrentSong(
+    autoPlay
+){
+
+    if(
+        currentSongIndex < 0 ||
+        currentSongIndex >=
+        currentPlaylist.length
+    ){
+
+        return;
+
+    }
+
+
+    const song =
+        currentPlaylist[
+            currentSongIndex
+        ];
+
+
+    const image =
+        song.image ||
+        "https://pocketmusic.qzz.io/icon.png";
+
+
+    document
+        .getElementById(
+            "playerImage"
+        )
+        .src =
+        image;
+
+
+    document
+        .getElementById(
+            "currentSongName"
+        )
+        .textContent =
+        song.name ||
+        "Unknown Song";
+
+
+    document
+        .getElementById(
+            "currentSinger"
+        )
+        .textContent =
+        song.singer ||
+        "Unknown Singer";
+
+
+    document
+        .getElementById(
+            "miniImage"
+        )
+        .src =
+        image;
+
+
+    document
+        .getElementById(
+            "miniName"
+        )
+        .textContent =
+        song.name ||
+        "Unknown Song";
+
+
+    document
+        .getElementById(
+            "miniSinger"
+        )
+        .textContent =
+        song.singer ||
+        "Unknown Singer";
+
+
+    audio.src =
+        song.music || "";
+
+    audio.load();
+
+
+    updateMiniPlayButton();
+
+    renderPlayerSongList();
+
+
+    if(autoPlay){
+
+        audio
+            .play()
+            .then(() => {
+
+                updateMiniPlayButton();
+
+            })
+            .catch(() => {});
+
+    }
+
+}
+
+
+/* =========================================
+   PLAY SONG
+========================================= */
+
+function playSong(
+    index,
+    autoPlay = true
+){
+
+    if(
+        index < 0 ||
+        index >= currentPlaylist.length
+    ){
+
+        return;
+
+    }
+
+
+    currentSongIndex =
+        index;
+
+
+    loadCurrentSong(
+        autoPlay
+    );
+
+}
+
+
+/* =========================================
+   AUTO NEXT
+========================================= */
+
+audio.addEventListener(
+    "ended",
+    function(){
+
+        if(
+            currentSongIndex <
+            currentPlaylist.length - 1
+        ){
+
+            currentSongIndex++;
+
+            loadCurrentSong(true);
+
+        }
+
+        else{
+
+            currentSongIndex = 0;
+
+            loadCurrentSong(false);
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   PLAYER SONG LIST
+========================================= */
+
+function renderPlayerSongList(){
+
+    const box =
+        document.getElementById(
+            "playerSongList"
+        );
+
+
+    box.innerHTML = "";
+
+
+    currentPlaylist.forEach(
+        (song,index) => {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "player-song" +
+                (
+                    index ===
+                    currentSongIndex
+                    ? " active"
+                    : ""
+                );
+
+
+            item.onclick =
+                function(){
+
+                    playSong(
+                        index,
+                        true
+                    );
+
+                };
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                song.image ||
+                "https://pocketmusic.qzz.io/icon.png";
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "player-song-info";
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "player-song-name";
+
+
+            name.textContent =
+                song.name ||
+                "Unknown Song";
+
+
+            const singer =
+                document.createElement(
+                    "div"
+                );
+
+
+            singer.className =
+                "player-song-singer";
+
+
+            singer.textContent =
+                song.singer ||
+                "Unknown Singer";
+
+
+            info.appendChild(name);
+
+            info.appendChild(singer);
+
+
+            const icon =
+                document.createElement(
+                    "div"
+                );
+
+
+            icon.className =
+                "playing-icon";
+
+
+            icon.textContent =
+                index === currentSongIndex
+                ? "🔊"
+                : "▶";
+
+
+            item.appendChild(image);
+
+            item.appendChild(info);
+
+            item.appendChild(icon);
+
+
+            box.appendChild(item);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   MINIMIZE
+========================================= */
+
+function minimizePlayer(){
+
+    if(!isPlayerOpen){
+
+        return;
+
+    }
+
+
+    isMini = true;
+
+
+    document
+        .getElementById(
+            "playerPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "createPage"
+        )
+        .style.display =
+        "none";
+
+
+    /*
+     * Home stays visible.
+     */
+
+    document
+        .getElementById(
+            "playlistHome"
+        )
+        .style.display =
+        "block";
+
+
+    document
+        .getElementById(
+            "miniPlayer"
+        )
+        .style.display =
+        "flex";
+
+
+    updateMiniPlayer();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
+
+}
+
+
+/* =========================================
+   RESTORE PLAYER
+========================================= */
+
+function restorePlayer(){
+
+    if(!isPlayerOpen){
+
+        return;
+
+    }
+
+
+    isMini = false;
+
+
+    document
+        .getElementById(
+            "miniPlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playlistHome"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "createPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playerPage"
+        )
+        .style.display =
+        "block";
+
+
+    renderPlayerSongList();
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
+
+}
+
+
+/* =========================================
+   MINI PLAYER
+========================================= */
+
+function updateMiniPlayer(){
+
+    if(
+        currentSongIndex < 0 ||
+        currentSongIndex >=
+        currentPlaylist.length
+    ){
+
+        return;
+
+    }
+
+
+    const song =
+        currentPlaylist[
+            currentSongIndex
+        ];
+
+
+    document
+        .getElementById(
+            "miniImage"
+        )
+        .src =
+        song.image ||
+        "https://pocketmusic.qzz.io/icon.png";
+
+
+    document
+        .getElementById(
+            "miniName"
+        )
+        .textContent =
+        song.name ||
+        "Unknown Song";
+
+
+    document
+        .getElementById(
+            "miniSinger"
+        )
+        .textContent =
+        song.singer ||
+        "Unknown Singer";
+
+
+    updateMiniPlayButton();
+
+}
+
+
+function updateMiniPlayButton(){
+
+    const button =
+        document.getElementById(
+            "miniPlayButton"
+        );
+
+
+    button.textContent =
+        audio.paused
+        ? "▶"
+        : "Ⅱ";
+
+}
+
+
+function togglePlay(){
+
+    if(!audio.src){
+
+        return;
+
+    }
+
+
+    if(audio.paused){
+
+        audio
+            .play()
+            .catch(() => {});
+
+    }
+
+    else{
+
+        audio.pause();
+
+    }
+
+}
+
+
+audio.addEventListener(
+    "play",
+    updateMiniPlayButton
+);
+
+audio.addEventListener(
+    "pause",
+    updateMiniPlayButton
+);
+
+
+/* =========================================
+   CLOSE PLAYER
+========================================= */
+
+function closePlayer(){
+
+    audio.pause();
+
+    audio.removeAttribute(
+        "src"
+    );
+
+    audio.load();
+
+
+    currentPlaylist = [];
+
+    currentPlaylistName = "";
+
+    currentPlaylistId = "";
+
+    currentSongIndex = -1;
+
+    isPlayerOpen = false;
+
+    isMini = false;
+
+
+    document
+        .getElementById(
+            "playerPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "miniPlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "createPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playlistHome"
+        )
+        .style.display =
+        "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
+
+}
+
+
+/* =========================================
+   SHARE
+========================================= */
+
+async function shareCurrentSong(){
+
+    if(
+        currentSongIndex < 0 ||
+        currentSongIndex >=
+        currentPlaylist.length
+    ){
+
+        return;
+
+    }
+
+
+    const song =
+        currentPlaylist[
+            currentSongIndex
+        ];
+
+
+    const url =
+        location.origin +
+        "/?song=" +
+        encodeURIComponent(
+            song.id
+        );
+
+
+    try{
+
+        if(navigator.share){
+
+            await navigator.share({
+
+                title:
+                    song.name ||
+                    "Pocket Music",
+
+                text:
+                    (
+                        song.name ||
+                        "Listen to this song"
+                    ) +
+                    " - Pocket Music",
+
+                url:url
+
+            });
+
+        }
+
+        else{
+
+            await navigator.clipboard
+                .writeText(url);
+
+            alert(
+                "Song link copied."
+            );
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* =========================================
+   CREATE PLAYLIST
+========================================= */
+
+function startCreatePlaylist(){
+
+    const user =
+        auth.currentUser;
+
+
+    if(!user){
+
+        location.href =
+            "profile.html?login=1";
+
+        return;
+
+    }
+
+
+    selectedSongIds = [];
+
+
+    document
+        .getElementById(
+            "playlistName"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "musicSearch"
+        )
+        .value = "";
+
+
+    renderSelectedSongs();
+
+    renderSongResults();
+
+
+    document
+        .getElementById(
+            "playlistHome"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playerPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "miniPlayer"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "createPage"
+        )
+        .style.display =
+        "block";
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"instant"
+    });
+
+}
+
+
+/* =========================================
+   CANCEL CREATE
+========================================= */
+
+function cancelCreate(){
+
+    document
+        .getElementById(
+            "createPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playerPage"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "playlistHome"
+        )
+        .style.display =
+        "block";
+
+
+    selectedSongIds = [];
+
+}
+
+
+/* =========================================
+   SEARCH MUSIC
+========================================= */
+
+function searchMusic(){
+
+    renderSongResults();
+
+}
+
+
+/* =========================================
+   RENDER SONG RESULTS
+========================================= */
+
+function renderSongResults(){
+
+    const box =
+        document.getElementById(
+            "songResults"
+        );
+
+
+    if(!box){
+
+        return;
+
+    }
+
+
+    const input =
+        document.getElementById(
+            "musicSearch"
+        );
+
+
+    const query =
+        normalizeSearch(
+            input
+                ? input.value
+                : ""
+        );
+
+
+    let results =
+        allSongs.filter(song => {
+
+            if(!query){
+
+                return true;
+
+            }
+
+
+            const name =
+                normalizeSearch(
+                    song.name || ""
+                );
+
+
+            const singer =
+                normalizeSearch(
+                    song.singer || ""
+                );
+
+
+            return (
+                name.includes(query) ||
+                singer.includes(query)
+            );
+
+        });
+
+
+    /*
+     * Don't render thousands at once.
+     */
+
+    results =
+        results.slice(0,100);
+
+
+    box.innerHTML = "";
+
+
+    if(results.length === 0){
+
+        box.innerHTML =
+            `
+            <div class="empty">
+                No music found.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    results.forEach(song => {
+
+        const row =
+            document.createElement(
+                "div"
+            );
+
+
+        row.className =
+            "song-result";
+
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+
+        image.src =
+            song.image ||
+            "https://pocketmusic.qzz.io/icon.png";
+
+
+        const info =
+            document.createElement(
+                "div"
+            );
+
+
+        info.className =
+            "song-result-info";
+
+
+        const name =
+            document.createElement(
+                "div"
+            );
+
+
+        name.className =
+            "song-result-name";
+
+
+        name.textContent =
+            song.name ||
+            "Unknown Song";
+
+
+        const singer =
+            document.createElement(
+                "div"
+            );
+
+
+        singer.className =
+            "song-result-singer";
+
+
+        singer.textContent =
+            song.singer ||
+            "Unknown Singer";
+
+
+        info.appendChild(name);
+
+        info.appendChild(singer);
+
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        if(
+            selectedSongIds.includes(
+                song.id
+            )
+        ){
+
+            button.className =
+                "remove-btn";
+
+            button.textContent =
+                "Remove";
+
+
+            button.onclick =
+                function(){
+
+                    removeSelectedSong(
+                        song.id
+                    );
+
+                };
+
+        }
+
+        else{
+
+            button.className =
+                "add-btn";
+
+            button.textContent =
+                "Add";
+
+
+            button.onclick =
+                function(){
+
+                    addSelectedSong(
+                        song.id
+                    );
+
+                };
+
+        }
+
+
+        row.appendChild(image);
+
+        row.appendChild(info);
+
+        row.appendChild(button);
+
+
+        box.appendChild(row);
+
+    });
+
+}
+
+
+/* =========================================
+   ADD SONG
+========================================= */
+
+function addSelectedSong(id){
+
+    if(
+        !selectedSongIds.includes(id)
+    ){
+
+        selectedSongIds.push(id);
+
+    }
+
+
+    renderSelectedSongs();
+
+    renderSongResults();
+
+}
+
+
+/* =========================================
+   REMOVE SONG
+========================================= */
+
+function removeSelectedSong(id){
+
+    selectedSongIds =
+        selectedSongIds.filter(
+            songId =>
+                songId !== id
+        );
+
+
+    renderSelectedSongs();
+
+    renderSongResults();
+
+}
+
+
+/* =========================================
+   SELECTED SONGS
+========================================= */
+
+function renderSelectedSongs(){
+
+    const box =
+        document.getElementById(
+            "selectedSongs"
+        );
+
+
+    box.innerHTML = "";
+
+
+    if(
+        selectedSongIds.length === 0
+    ){
+
+        box.innerHTML =
+            `
+            <div class="empty">
+                No music selected.
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    selectedSongIds.forEach(
+        (id,index) => {
+
+            const song =
+                allSongs.find(
+                    item =>
+                        item.id === id
+                );
+
+
+            if(!song){
+
+                return;
+
+            }
+
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "selected-song";
+
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                song.image ||
+                "https://pocketmusic.qzz.io/icon.png";
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "selected-song-info";
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "selected-song-name";
+
+
+            name.textContent =
+                (
+                    index === 0
+                    ? "① "
+                    : ""
+                ) +
+                (
+                    song.name ||
+                    "Unknown Song"
+                );
+
+
+            const singer =
+                document.createElement(
+                    "div"
+                );
+
+
+            singer.className =
+                "selected-song-singer";
+
+
+            singer.textContent =
+                song.singer ||
+                "Unknown Singer";
+
+
+            info.appendChild(name);
+
+            info.appendChild(singer);
+
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.className =
+                "remove-btn";
+
+            button.textContent =
+                "Remove";
+
+
+            button.onclick =
+                function(){
+
+                    removeSelectedSong(
+                        song.id
+                    );
+
+                };
+
+
+            row.appendChild(image);
+
+            row.appendChild(info);
+
+            row.appendChild(button);
+
+
+            box.appendChild(row);
+
+        }
+    );
+
+}
+
+
+/* =========================================
+   SAVE PLAYLIST
+========================================= */
+
+async function savePlaylist(){
+
+    const user =
+        auth.currentUser;
+
+
+    if(!user){
+
+        location.href =
+            "profile.html?login=1";
+
+        return;
+
+    }
+
+
+    const name =
+        document
+            .getElementById(
+                "playlistName"
+            )
+            .value
+            .trim();
+
+
+    if(!name){
+
+        alert(
+            "Please enter playlist name."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        selectedSongIds.length === 0
+    ){
+
+        alert(
+            "Please select at least one song."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * First selected song becomes
+     * playlist image.
+     */
+
+    const firstSong =
+        allSongs.find(
+            song =>
+                song.id ===
+                selectedSongIds[0]
+        );
+
+
+    const songs = {};
+
+
+    selectedSongIds.forEach(id => {
+
+        songs[id] = true;
+
+    });
+
+
+    const playlist = {
+
+        name:name,
+
+        image:
+            firstSong?.image ||
+            "https://pocketmusic.qzz.io/icon.png",
+
+        songs:songs,
+
+        createdAt:
+            firebase.database
+                .ServerValue
+                .TIMESTAMP
+
+    };
+
+
+    try{
+
+        await db
+            .ref(
+                "users/" +
+                user.uid +
+                "/playlists"
+            )
+            .push(
+                playlist
+            );
+
+
+        selectedSongIds = [];
+
+
+        document
+            .getElementById(
+                "createPage"
+            )
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById(
+                "playlistHome"
+            )
+            .style.display =
+            "block";
+
+
+        alert(
+            "Playlist created."
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "Could not create playlist."
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   INITIAL LOAD
+========================================= */
+
+loadSongs();
+
+loadGlobalPlaylists();
+
+</script>
+
+</body>
+</html>

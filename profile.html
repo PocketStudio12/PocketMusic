@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Profile - Pocket Music</title>
+
+    <link rel="icon" href="https://pocketmusic.qzz.io/icon.png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #080b12;
+            color: white;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 1px solid #202633;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+            padding: 25px 18px;
+        }
+
+        .card {
+            background: #111722;
+            border: 1px solid #202938;
+            border-radius: 18px;
+            padding: 22px;
+            margin-top: 15px;
+        }
+
+        .avatar {
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            background: #263247;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .email {
+            text-align: center;
+            color: #c6ccd8;
+            font-size: 15px;
+            word-break: break-all;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #293344;
+            border-radius: 10px;
+            background: #090d14;
+            color: white;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #5c8cff;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #4169e1;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .secondary-btn {
+            background: #202938;
+            margin-top: 12px;
+        }
+
+        .logout-btn {
+            background: #7d2630;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 18px;
+            color: #9da6b5;
+            font-size: 14px;
+        }
+
+        .switch span {
+            color: #6f96ff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .error {
+            background: #3a171c;
+            border: 1px solid #71313a;
+            color: #ff9ca5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success {
+            background: #143322;
+            border: 1px solid #285c3b;
+            color: #8ee6aa;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .profile-title {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .menu {
+            margin-top: 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: #171e2a;
+            border: 1px solid #252e3d;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-item span:first-child {
+            font-size: 22px;
+        }
+
+        .menu-item small {
+            color: #aeb6c5;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 68px;
+            background: #0d121b;
+            border-top: 1px solid #202938;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            width: 33.33%;
+            height: 100%;
+            text-decoration: none;
+            color: #7f8999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 3px;
+            transition: 0.2s;
+        }
+
+        .nav-item span {
+            font-size: 22px;
+        }
+
+        .nav-item small {
+            font-size: 11px;
+        }
+
+        .nav-item.active {
+            color: #ffffff;
+        }
+
+        .nav-item.active span {
+            transform: scale(1.08);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        👤 Profile
+    </div>
+
+    <main class="container">
+
+        <!-- LOGIN / SIGNUP -->
+        <div id="authCard" class="card">
+
+            <h2 id="authTitle" style="text-align:center; margin-bottom:20px;">
+                Login
+            </h2>
+
+            <div id="errorBox" class="error"></div>
+            <div id="successBox" class="success"></div>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Email"
+                autocomplete="email"
+            >
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Password"
+                autocomplete="current-password"
+            >
+
+            <button id="authButton" onclick="authenticate()">
+                Login
+            </button>
+
+            <div class="switch">
+                <span id="switchText">
+                    Don't have an account?
+                </span>
+
+                <span onclick="toggleAuth()" id="switchButton">
+                    Sign Up
+                </span>
+            </div>
+
+        </div>
+
+
+        <!-- PROFILE -->
+        <div id="profileCard" class="card hidden">
+
+            <div id="avatar" class="avatar">
+                ?
+            </div>
+
+            <h2 id="profileTitle" class="profile-title">
+                My Profile
+            </h2>
+
+            <div id="profileEmail" class="email">
+                -
+            </div>
+
+            <div class="menu">
+
+                <a href="playlist.html" class="menu-item">
+                    <span>🎵</span>
+                    <div>
+                        <strong>My Playlists</strong><br>
+                        <small>View and manage your playlists</small>
+                    </div>
+                </a>
+
+                <a href="index.html" class="menu-item">
+                    <span>🏠</span>
+                    <div>
+                        <strong>Home</strong><br>
+                        <small>Back to Pocket Music</small>
+                    </div>
+                </a>
+
+            </div>
+
+            <button class="logout-btn" onclick="logout()">
+                Logout
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+
+        <a href="index.html" class="nav-item">
+            <span>🏠</span>
+            <small>Home</small>
+        </a>
+
+        <a href="playlist.html" class="nav-item">
+            <span>🎵</span>
+            <small>Playlist</small>
+        </a>
+
+        <a href="profile.html" class="nav-item active">
+            <span>👤</span>
+            <small>Profile</small>
+        </a>
+
+    </nav>
+
+
+    <!-- FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+
+    <script>
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnSBnETllDLMB47EKg8zSCKQcAycSZu7k",
+            authDomain: "pocketamusic.firebaseapp.com",
+            databaseURL: "https://pocketamusic-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "pocketamusic",
+            storageBucket: "pocketamusic.firebasestorage.app",
+            messagingSenderId: "54287365789",
+            appId: "1:54287365789:web:a4faba0305edfeb4f94674"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        let isLogin = true;
+
+
+        /* =========================
+           AUTH MODE
+        ========================= */
+
+        function toggleAuth() {
+
+            isLogin = !isLogin;
+
+            clearMessages();
+
+            if (isLogin) {
+
+                document.getElementById("authTitle").textContent = "Login";
+
+                document.getElementById("authButton").textContent = "Login";
+
+                document.getElementById("switchText").textContent =
+                    "Don't have an account?";
+
+                document.getElementById("switchButton").textContent =
+                    "Sign Up";
+
+                document.getElementById("password").autocomplete =
+                    "current-password";
+
+            } else {
+
+                document.getElementById("authTitle").textContent = "Create Account";
+
+                document.getElementById("authButton").textContent = "Sign Up";
+
+                document.getElementById("switchText").textContent =
+                    "Already have an account?";
+
+                document.getElementById("switchButton").textContent =
+                    "Login";
+
+                document.getElementById("password").autocomplete =
+                    "new-password";
+            }
+        }
+
+
+        /* =========================
+           LOGIN / SIGNUP
+        ========================= */
+
+        async function authenticate() {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            clearMessages();
+
+            if (!email || !password) {
+
+                showError("Please enter email and password.");
+
+                return;
+            }
+
+            if (password.length < 6) {
+
+                showError("Password must be at least 6 characters.");
+
+                return;
+            }
+
+            const button =
+                document.getElementById("authButton");
+
+            button.disabled = true;
+
+            button.textContent =
+                isLogin ? "Logging in..." : "Creating account...";
+
+            try {
+
+                let result;
+
+                if (isLogin) {
+
+                    result =
+                        await auth.signInWithEmailAndPassword(
+                            email,
+                            password
+                        );
+
+                    showSuccess("Login successful.");
+
+                } else {
+
+                    result =
+                        await auth.createUserWithEmailAndPassword(
+                            email,
+                            password
+                        );
+
+                    await db.ref("users/" + result.user.uid).set({
+                        email: result.user.email,
+                        createdAt:
+                            firebase.database.ServerValue.TIMESTAMP
+                    });
+
+                    showSuccess("Account created successfully.");
+                }
+
+            } catch (error) {
+
+                console.error(error);
+
+                showError(getAuthError(error));
+
+            } finally {
+
+                button.disabled = false;
+
+                button.textContent =
+                    isLogin ? "Login" : "Sign Up";
+            }
+        }
+
+
+        /* =========================
+           AUTH STATE
+        ========================= */
+
+        auth.onAuthStateChanged(function(user) {
+
+            if (user) {
+
+                showProfile(user);
+
+            } else {
+
+                showLogin();
+            }
+        });
+
+
+        /* =========================
+           SHOW PROFILE
+        ========================= */
+
+        function showProfile(user) {
+
+            document
+                .getElementById("authCard")
+                .classList.add("hidden");
+
+            document
+                .getElementById("profileCard")
+                .classList.remove("hidden");
+
+            const email = user.email || "";
+
+            document
+                .getElementById("profileEmail")
+                .textContent = email;
+
+            const initial =
+                email
+                    ? email.charAt(0).toUpperCase()
+                    : "?";
+
+            document
+                .getElementById("avatar")
+                .textContent = initial;
+        }
+
+
+        /* =========================
+           SHOW LOGIN
+        ========================= */
+
+        function showLogin() {
+
+            document
+                .getElementById("profileCard")
+                .classList.add("hidden");
+
+            document
+                .getElementById("authCard")
+                .classList.remove("hidden");
+        }
+
+
+        /* =========================
+           LOGOUT
+        ========================= */
+
+        async function logout() {
+
+            try {
+
+                await auth.signOut();
+
+            } catch (error) {
+
+                showError(error.message);
+            }
+        }
+
+
+        /* =========================
+           ERROR MESSAGE
+        ========================= */
+
+        function getAuthError(error) {
+
+            switch (error.code) {
+
+                case "auth/invalid-email":
+                    return "Invalid email address.";
+
+                case "auth/user-not-found":
+                    return "No account found with this email.";
+
+                case "auth/wrong-password":
+                    return "Incorrect password.";
+
+                case "auth/invalid-credential":
+                    return "Incorrect email or password.";
+
+                case "auth/email-already-in-use":
+                    return "This email is already registered.";
+
+                case "auth/weak-password":
+                    return "Password is too weak.";
+
+                case "auth/network-request-failed":
+                    return "Network error. Please check your internet connection.";
+
+                case "auth/too-many-requests":
+                    return "Too many attempts. Please try again later.";
+
+                default:
+                    return error.message || "Something went wrong.";
+            }
+        }
+
+
+        /* =========================
+           MESSAGES
+        ========================= */
+
+        function showError(message) {
+
+            const box =
+                document.getElementById("errorBox");
+
+            box.textContent = message;
+
+            box.style.display = "block";
+
+            document
+                .getElementById("successBox")
+                .style.display = "none";
+        }
+
+
+        function showSuccess(message) {
+
+            const box =
+                document.getElementById("successBox");
+
+            box.textContent = message;
+
+            box.style.display = "block";
+
+            document
+                .getElementById("errorBox")
+                .style.display = "none";
+        }
+
+
+        function clearMessages() {
+
+            document
+                .getElementById("errorBox")
+                .style.display = "none";
+
+            document
+                .getElementById("successBox")
+                .style.display = "none";
+        }
+
+
+        /* =========================
+           ENTER KEY
+        ========================= */
+
+        document
+            .getElementById("password")
+            .addEventListener("keydown", function(event) {
+
+                if (event.key === "Enter") {
+
+                    authenticate();
+                }
+            });
+
+
+        /* =========================
+           LOGIN REDIRECT SUPPORT
+           
+           profile.html?login=1
+        ========================= */
+
+        const params =
+            new URLSearchParams(location.search);
+
+        if (params.get("login") === "1") {
+
+            isLogin = true;
+
+            document.getElementById("authTitle")
+                .textContent = "Login";
+
+            document.getElementById("authButton")
+                .textContent = "Login";
+
+            document.getElementById("switchText")
+                .textContent = "Don't have an account?";
+
+            document.getElementById("switchButton")
+                .textContent = "Sign Up";
+        }
+
+    </script>
+
+</body>
+</html>
