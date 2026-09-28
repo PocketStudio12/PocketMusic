@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+>
+
+<title>Pocket Music</title>
+
+<link
+    rel="icon"
+    href="https://pocketmusic.qzz.io/icon.png"
+>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.4/firebase-database-compat.js"></script>
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    background:#070a10;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+    position:sticky;
+    top:0;
+    z-index:1000;
+
+    height:62px;
+
+    display:flex;
+    align-items:center;
+
+    padding:0 16px;
+
+    background:rgba(7,10,16,.94);
+    backdrop-filter:blur(18px);
+
+    border-bottom:1px solid #1d2430;
+
+    font-size:20px;
+    font-weight:700;
+}
+
+.header img{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    object-fit:cover;
+
+    margin-right:11px;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box{
+    padding:14px 14px 8px;
+}
+
+.search-inner{
+    position:relative;
+}
+
+.search-input{
+    width:100%;
+    height:48px;
+
+    border:none;
+    outline:none;
+
+    border-radius:15px;
+
+    padding:0 45px 0 45px;
+
+    background:#111722;
+    color:#fff;
+
+    font-size:15px;
+
+    border:1px solid #202938;
+}
+
+.search-input::placeholder{
+    color:#737d8d;
+}
+
+.search-icon{
+    position:absolute;
+    left:15px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    font-size:18px;
+    color:#8791a2;
+
+    pointer-events:none;
+}
+
+.search-clear{
+    position:absolute;
+    right:10px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    width:32px;
+    height:32px;
+
+    border:0;
+    border-radius:50%;
+
+    background:#242c39;
+    color:#fff;
+
+    display:none;
+}
+
+.search-results{
+    display:none;
+    padding:4px 14px 12px;
+}
+
+.search-result-title{
+    font-size:14px;
+    color:#8993a4;
+    margin:7px 2px 9px;
+}
+
+.search-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.search-song{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:9px;
+
+    background:#111722;
+
+    border:1px solid #202938;
+    border-radius:13px;
+
+    cursor:pointer;
+}
+
+.search-song img{
+    width:54px;
+    height:54px;
+
+    border-radius:9px;
+    object-fit:cover;
+
+    background:#1b222d;
+}
+
+.search-song-info{
+    min-width:0;
+    flex:1;
+}
+
+.search-song-name{
+    font-size:14px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.search-song-singer{
+    margin-top:5px;
+
+    font-size:12px;
+    color:#818b9c;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.container{
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+}
+
+.category{
+    margin-top:17px;
+}
+
+.category-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 14px 10px;
+}
+
+.category-title{
+    font-size:18px;
+    font-weight:700;
+}
+
+.category-controls{
+    display:flex;
+    gap:6px;
+}
+
+.row-btn{
+    width:34px;
+    height:34px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#151c27;
+    color:#fff;
+
+    font-size:17px;
+}
+
+.song-row{
+    display:flex;
+
+    overflow-x:auto;
+
+    gap:12px;
+
+    padding:0 14px 8px;
+
+    scrollbar-width:none;
+
+    overscroll-behavior-x:contain;
+}
+
+.song-row::-webkit-scrollbar{
+    display:none;
+}
+
+
+/* =========================================================
+   SONG CARD
+========================================================= */
+
+.card{
+    flex:0 0 145px;
+    width:145px;
+
+    cursor:pointer;
+
+    touch-action:manipulation;
+}
+
+.card-image-wrap{
+    width:145px;
+    height:145px;
+
+    border-radius:13px;
+
+    overflow:hidden;
+
+    background:#121821;
+
+    border:1px solid #202938;
+}
+
+.card img{
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+}
+
+.card-name{
+    margin-top:8px;
+
+    font-size:14px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.card-singer{
+    margin-top:4px;
+
+    font-size:11px;
+    color:#7e899a;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.loading-card{
+    flex:0 0 145px;
+    width:145px;
+    height:190px;
+
+    border-radius:13px;
+
+    background:#101620;
+
+    animation:pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+    0%,100%{opacity:.45}
+    50%{opacity:.8}
+}
+
+.empty-category{
+    color:#687384;
+    padding:10px 14px;
+    font-size:13px;
+}
+
+
+/* =========================================================
+   FULL PLAYER
+========================================================= */
+
+.full-player{
+    position:fixed;
+    inset:0;
+
+    z-index:2147483647;
+
+    display:none;
+
+    flex-direction:column;
+
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #253246 0%,
+            #101722 34%,
+            #070a10 75%
+        );
+
+    overflow-y:auto;
+}
+
+.full-top{
+    height:64px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 15px;
+
+    flex-shrink:0;
+}
+
+.player-top-title{
+    font-size:13px;
+    color:#aeb7c5;
+    font-weight:600;
+}
+
+.player-top-actions{
+    display:flex;
+    gap:7px;
+}
+
+.player-top-button{
+    width:40px;
+    height:40px;
+
+    border:none;
+    border-radius:50%;
+
+    background:rgba(255,255,255,.08);
+    color:#fff;
+
+    font-size:17px;
+}
+
+.player-main{
+    width:100%;
+
+    max-width:520px;
+
+    margin:auto;
+
+    padding:18px 24px 35px;
+
+    display:flex;
+    flex-direction:column;
+}
+
+.player-image-wrap{
+    width:min(82vw,390px);
+    aspect-ratio:1/1;
+
+    margin:8px auto 28px;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    background:#141b26;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.55);
+
+    border:1px solid rgba(255,255,255,.07);
+}
+
+.player-image{
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    object-fit:cover;
+}
+
+.player-name{
+    font-size:24px;
+    font-weight:800;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.player-singer{
+    margin-top:7px;
+
+    color:#8994a5;
+    font-size:14px;
+}
+
+.progress-area{
+    margin-top:30px;
+}
+
+.progress{
+    width:100%;
+
+    height:5px;
+
+    appearance:none;
+
+    border-radius:10px;
+
+    background:#343d4b;
+
+    outline:none;
+}
+
+.progress::-webkit-slider-thumb{
+    appearance:none;
+
+    width:15px;
+    height:15px;
+
+    border-radius:50%;
+
+    background:#fff;
+}
+
+.progress-times{
+    display:flex;
+    justify-content:space-between;
+
+    margin-top:7px;
+
+    color:#778293;
+
+    font-size:11px;
+}
+
+.player-controls{
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    margin-top:28px;
+}
+
+.main-play{
+    width:64px;
+    height:64px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#fff;
+    color:#080b10;
+
+    font-size:25px;
+}
+
+.player-bottom-actions{
+    display:flex;
+
+    justify-content:center;
+
+    gap:10px;
+
+    margin-top:24px;
+}
+
+.player-action{
+    border:1px solid #28313f;
+
+    background:#111823;
+    color:#fff;
+
+    padding:11px 17px;
+
+    border-radius:12px;
+
+    font-size:13px;
+}
+
+
+/* =========================================================
+   MINI PLAYER
+========================================================= */
+
+.mini-player{
+    position:fixed;
+
+    left:8px;
+    right:8px;
+
+    bottom:calc(76px + env(safe-area-inset-bottom,0px));
+
+    z-index:9999;
+
+    display:none;
+
+    height:66px;
+
+    padding:7px;
+
+    border-radius:15px;
+
+    background:rgba(17,23,34,.97);
+
+    border:1px solid #293241;
+
+    box-shadow:0 12px 40px rgba(0,0,0,.55);
+
+    align-items:center;
+    gap:9px;
+}
+
+.mini-main{
+    flex:1;
+    min-width:0;
+
+    display:flex;
+    align-items:center;
+
+    gap:10px;
+
+    cursor:pointer;
+}
+
+.mini-image{
+    width:51px;
+    height:51px;
+
+    border-radius:10px;
+
+    object-fit:cover;
+
+    background:#171e29;
+}
+
+.mini-info{
+    min-width:0;
+    flex:1;
+}
+
+.mini-name{
+    font-size:14px;
+    font-weight:700;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.mini-singer{
+    margin-top:3px;
+
+    color:#7f8999;
+    font-size:11px;
+
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.mini-play{
+    width:45px;
+    height:45px;
+
+    border:none;
+    border-radius:50%;
+
+    background:#fff;
+    color:#090c11;
+
+    font-size:17px;
+}
+
+
+/* =========================================================
+   BOTTOM NAV — PREVIOUS NAV
+========================================================= */
+
+.bottom-nav{
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:68px;
+
+    background:#0d121b;
+
+    border-top:1px solid #202938;
+
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+
+    z-index:10000;
+
+    padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+.nav-item{
+    width:33.33%;
+    height:100%;
+
+    text-decoration:none;
+
+    color:#7f8999;
+
+    display:flex;
+    flex-direction:column;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:3px;
+}
+
+.nav-item span{
+    font-size:22px;
+}
+
+.nav-item small{
+    font-size:11px;
+}
+
+.nav-item.active{
+    color:#fff;
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media(min-width:700px){
+
+    .card,
+    .loading-card{
+        flex-basis:170px;
+        width:170px;
+    }
+
+    .card-image-wrap{
+        width:170px;
+        height:170px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header class="header">
+
+    <img
+        src="https://pocketmusic.qzz.io/icon.png"
+        alt="Pocket Music"
+    >
+
+    <span>Pocket Music</span>
+
+</header>
+
+
+<!-- =======================================================
+     SEARCH
+======================================================= -->
+
+<div class="search-box">
+
+    <div class="search-inner">
+
+        <span class="search-icon">🔍</span>
+
+        <input
+            id="searchInput"
+            class="search-input"
+            type="search"
+            placeholder="Search songs, singers..."
+            autocomplete="off"
+        >
+
+        <button
+            id="searchClear"
+            class="search-clear"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     SEARCH RESULTS
+======================================================= -->
+
+<section
+    id="searchResults"
+    class="search-results"
+>
+
+    <div
+        id="searchResultTitle"
+        class="search-result-title"
+    >
+        Search results
+    </div>
+
+    <div
+        id="searchList"
+        class="search-list"
+    ></div>
+
+</section>
+
+
+<!-- =======================================================
+     HOME
+======================================================= -->
+
+<main
+    id="home"
+    class="container"
+></main>
+
+
+<!-- =======================================================
+     FULL PLAYER
+======================================================= -->
+
+<div
+    id="fullPlayer"
+    class="full-player"
+>
+
+    <div class="full-top">
+
+        <div class="player-top-title">
+            NOW PLAYING
+        </div>
+
+        <div class="player-top-actions">
+
+            <button
+                class="player-top-button"
+                onclick="minimizePlayer()"
+                type="button"
+            >
+                ↓
+            </button>
+
+            <button
+                class="player-top-button"
+                onclick="closePlayer()"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="player-main">
+
+        <div class="player-image-wrap">
+
+            <img
+                id="fimg"
+                class="player-image"
+                src="https://pocketmusic.qzz.io/icon.png"
+                alt="Song"
+            >
+
+        </div>
+
+
+        <div
+            id="fname"
+            class="player-name"
+        >
+            -
+        </div>
+
+
+        <div
+            id="fdescription"
+            class="player-singer"
+        >
+            -
+        </div>
+
+
+        <div class="progress-area">
+
+            <input
+                id="progress"
+                class="progress"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+            >
+
+            <div class="progress-times">
+
+                <span id="currentTime">
+                    0:00
+                </span>
+
+                <span id="duration">
+                    0:00
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="player-controls">
+
+            <button
+                id="playButton"
+                class="main-play"
+                onclick="togglePlay()"
+                type="button"
+            >
+                ▶
+            </button>
+
+        </div>
+
+
+        <div class="player-bottom-actions">
+
+            <button
+                class="player-action"
+                onclick="shareSong()"
+                type="button"
+            >
+                ↗ Share
+            </button>
+
+            <button
+                class="player-action"
+                onclick="minimizePlayer()"
+                type="button"
+            >
+                ↓ Minimize
+            </button>
+
+            <button
+                class="player-action"
+                onclick="closePlayer()"
+                type="button"
+            >
+                ✕ Close
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =======================================================
+     MINI PLAYER
+======================================================= -->
+
+<div
+    id="miniPlayer"
+    class="mini-player"
+>
+
+    <div
+        class="mini-main"
+        onclick="restorePlayer()"
+    >
+
+        <img
+            id="mimg"
+            class="mini-image"
+            src="https://pocketmusic.qzz.io/icon.png"
+            alt="Song"
+        >
+
+        <div class="mini-info">
+
+            <div
+                id="mname"
+                class="mini-name"
+            >
+                -
+            </div>
+
+            <div
+                id="msinger"
+                class="mini-singer"
+            >
+                -
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        id="miniPlayButton"
+        class="mini-play"
+        onclick="event.stopPropagation(); togglePlay()"
+        type="button"
+    >
+        ▶
+    </button>
+
+</div>
+
+
+<!-- =======================================================
+     PREVIOUS BOTTOM NAV
+======================================================= -->
+
+<nav
+    id="bottomNav"
+    class="bottom-nav"
+>
+
+    <a
+        href="index.html"
+        class="nav-item active"
+    >
+        <span>🏠</span>
+        <small>Home</small>
+    </a>
+
+
+    <a
+        href="playlist.html"
+        class="nav-item"
+    >
+        <span>🎵</span>
+        <small>Playlist</small>
+    </a>
+
+
+    <a
+        href="profile.html"
+        class="nav-item"
+    >
+        <span>👤</span>
+        <small>Profile</small>
+    </a>
+
+</nav>
+
+
+<!-- =======================================================
+     AUDIO
+======================================================= -->
+
+<audio
+    id="audio"
+    preload="none"
+></audio>
+
+
+<script>
+
+/* =========================================================
+   FIREBASE
+========================================================= */
+
+const firebaseConfig = {
+
+    apiKey:
+        "AIzaSyAnSBnETllDLMB47EK8gSCKQcAycSZu7k",
+
+    authDomain:
+        "pocketamusic.firebaseapp.com",
+
+    databaseURL:
+        "https://pocketamusic-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+    projectId:
+        "pocketamusic",
+
+    storageBucket:
+        "pocketmusic.firebasestorage.app",
+
+    messagingSenderId:
+        "54287365789",
+
+    appId:
+        "1:54287365789:web:a4faba0305edfeb4f94674"
+
+};
+
+
+firebase.initializeApp(firebaseConfig);
+
+const db =
+    firebase.database();
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const home =
+    document.getElementById("home");
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const searchClear =
+    document.getElementById("searchClear");
+
+const searchResults =
+    document.getElementById("searchResults");
+
+const searchList =
+    document.getElementById("searchList");
+
+const searchResultTitle =
+    document.getElementById("searchResultTitle");
+
+const fullPlayer =
+    document.getElementById("fullPlayer");
+
+const miniPlayer =
+    document.getElementById("miniPlayer");
+
+const bottomNav =
+    document.getElementById("bottomNav");
+
+const audio =
+    document.getElementById("audio");
+
+const fimg =
+    document.getElementById("fimg");
+
+const fname =
+    document.getElementById("fname");
+
+const fdescription =
+    document.getElementById("fdescription");
+
+const mimg =
+    document.getElementById("mimg");
+
+const mname =
+    document.getElementById("mname");
+
+const msinger =
+    document.getElementById("msinger");
+
+const playButton =
+    document.getElementById("playButton");
+
+const miniPlayButton =
+    document.getElementById("miniPlayButton");
+
+const progress =
+    document.getElementById("progress");
+
+const currentTimeElement =
+    document.getElementById("currentTime");
+
+const durationElement =
+    document.getElementById("duration");
+
+
+/* =========================================================
+   DATA
+========================================================= */
+
+let categories = [];
+
+let allSongs = [];
+
+let currentSong = null;
+
+let playerRequest = 0;
+
+let categoryState = {};
+
+let categoryRows = {};
+
+let observer = null;
+
+const SONGS_PER_LOAD = 1;
+
+const DEFAULT_IMAGE =
+    "https://pocketmusic.qzz.io/icon.png";
+
+
+/* =========================================================
+   NORMALIZE SEARCH
+========================================================= */
+
+function normalizeSearch(value){
+
+    return String(value || "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g," ");
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   IMAGE
+========================================================= */
+
+function setPlayerImage(element,url){
+
+    const imageUrl =
+        url || DEFAULT_IMAGE;
+
+    element.onerror = function(){
+
+        this.onerror = null;
+        this.src = DEFAULT_IMAGE;
+
+    };
+
+    element.src = imageUrl;
+
+}
+
+
+/* =========================================================
+   LAZY IMAGE OBSERVER
+========================================================= */
+
+const imageObserver =
+    new IntersectionObserver(
+        entries => {
+
+            entries.forEach(entry => {
+
+                if(!entry.isIntersecting){
+                    return;
+                }
+
+                const img =
+                    entry.target;
+
+                const url =
+                    img.dataset.src;
+
+                if(url){
+
+                    img.onerror = function(){
+
+                        this.onerror = null;
+                        this.src = DEFAULT_IMAGE;
+
+                    };
+
+                    img.src = url;
+
+                    delete img.dataset.src;
+
+                }
+
+                imageObserver.unobserve(img);
+
+            });
+
+        },
+        {
+            root:null,
+            rootMargin:"180px",
+            threshold:0.01
+        }
+    );
+
+
+function observeImages(){
+
+    document
+        .querySelectorAll(
+            "img[data-src]"
+        )
+        .forEach(img => {
+
+            imageObserver.observe(img);
+
+        });
+
+}
+
+
+/* =========================================================
+   LOAD CATEGORIES
+========================================================= */
+
+function loadCategories(){
+
+    db.ref("categories")
+        .on(
+            "value",
+            snapshot => {
+
+                categories = [];
+
+                snapshot.forEach(child => {
+
+                    const value =
+                        child.val();
+
+                    if(typeof value === "string"){
+
+                        categories.push(value);
+
+                    }
+                    else if(
+                        value &&
+                        value.name
+                    ){
+
+                        categories.push(
+                            value.name
+                        );
+
+                    }
+
+                });
+
+
+                if(categories.length === 0){
+
+                    categories = [
+                        "Hindi",
+                        "Bengali"
+                    ];
+
+                }
+
+
+                renderHome();
+
+                setupCategoryObserver();
+
+            },
+            error => {
+
+                console.error(
+                    "Categories error:",
+                    error
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   LOAD ALL SONGS FOR SEARCH
+========================================================= */
+
+function loadAllSongsForSearch(){
+
+    return db.ref("songs")
+        .once("value")
+        .then(snapshot => {
+
+            const result = [];
+
+            snapshot.forEach(child => {
+
+                const song =
+                    child.val() || {};
+
+                song.id =
+                    child.key;
+
+                result.push(song);
+
+            });
+
+            allSongs = result;
+
+            return result;
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Search song loading error:",
+                error
+            );
+
+            return [];
+
+        });
+
+}
+
+
+/* =========================================================
+   LOAD CATEGORY SONGS
+========================================================= */
+
+function loadCategorySongs(
+    category,
+    reset = false
+){
+
+    if(!categoryState[category]){
+
+        categoryState[category] = {
+
+            songs:[],
+            loadedKeys:{},
+            lastKey:null,
+            loading:false,
+            finished:false
+
+        };
+
+    }
+
+
+    const state =
+        categoryState[category];
+
+
+    if(state.loading){
+        return;
+    }
+
+
+    if(state.finished && !reset){
+        return;
+    }
+
+
+    if(reset){
+
+        state.songs = [];
+        state.loadedKeys = {};
+        state.lastKey = null;
+        state.finished = false;
+
+    }
+
+
+    state.loading = true;
+
+
+    let query =
+        db.ref("songs")
+            .orderByKey()
+            .limitToFirst(50);
+
+
+    if(state.lastKey){
+
+        query =
+            db.ref("songs")
+                .orderByKey()
+                .startAt(state.lastKey)
+                .limitToFirst(51);
+
+    }
+
+
+    query.once("value")
+        .then(snapshot => {
+
+            const batch = [];
+
+            snapshot.forEach(child => {
+
+                if(
+                    state.lastKey &&
+                    child.key === state.lastKey
+                ){
+                    return;
+                }
+
+                const song =
+                    child.val() || {};
+
+                song.id =
+                    child.key;
+
+                if(
+                    String(song.category || "")
+                        .toLowerCase()
+                    ===
+                    String(category || "")
+                        .toLowerCase()
+                ){
+
+                    batch.push(song);
+
+                }
+
+            });
+
+
+            const children =
+                [];
+
+            snapshot.forEach(child => {
+
+                children.push(child);
+
+            });
+
+
+            if(children.length > 0){
+
+                state.lastKey =
+                    children[children.length - 1].key;
+
+            }
+
+
+            children.forEach(child => {
+
+                const song =
+                    child.val() || {};
+
+                song.id =
+                    child.key;
+
+                if(
+                    String(song.category || "")
+                        .toLowerCase()
+                    ===
+                    String(category || "")
+                        .toLowerCase()
+                ){
+
+                    if(
+                        !state.loadedKeys[song.id]
+                    ){
+
+                        state.loadedKeys[song.id] = true;
+
+                        state.songs.push(song);
+
+                    }
+
+                }
+
+            });
+
+
+            if(
+                children.length < 50
+            ){
+
+                state.finished = true;
+
+            }
+
+
+            state.loading = false;
+
+
+            renderCategory(
+                category
+            );
+
+
+            observeImages();
+
+        })
+        .catch(error => {
+
+            console.error(
+                "Category load error:",
+                category,
+                error
+            );
+
+            state.loading = false;
+
+        });
+
+}
+
+
+/* =========================================================
+   RENDER HOME
+========================================================= */
+
+function renderHome(){
+
+    home.innerHTML = "";
+
+    categoryRows = {};
+
+    categories.forEach(category => {
+
+        const section =
+            document.createElement("section");
+
+        section.className =
+            "category";
+
+        section.dataset.category =
+            category;
+
+
+        section.innerHTML = `
+
+            <div class="category-head">
+
+                <div class="category-title">
+                    ${escapeHTML(category)}
+                </div>
+
+                <div class="category-controls">
+
+                    <button
+                        class="row-btn"
+                        type="button"
+                        onclick="scrollCategory('${escapeHTML(category).replace(/'/g,"\\'")}','left')"
+                    >
+                        ‹
+                    </button>
+
+                    <button
+                        class="row-btn"
+                        type="button"
+                        onclick="scrollCategory('${escapeHTML(category).replace(/'/g,"\\'")}','right')"
+                    >
+                        ›
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="song-row"
+                data-row="${escapeHTML(category)}"
+            ></div>
+
+        `;
+
+
+        home.appendChild(section);
+
+
+        const row =
+            section.querySelector(".song-row");
+
+
+        categoryRows[category] =
+            row;
+
+
+        row.addEventListener(
+            "scroll",
+            () => {
+
+                if(
+                    row.scrollLeft +
+                    row.clientWidth >=
+                    row.scrollWidth - 400
+                ){
+
+                    loadCategorySongs(
+                        category
+                    );
+
+                }
+
+            },
+            {
+                passive:true
+            }
+        );
+
+
+        loadCategorySongs(
+            category,
+            true
+        );
+
+    });
+
+
+    observeImages();
+
+}
+
+
+/* =========================================================
+   RENDER CATEGORY
+========================================================= */
+
+function renderCategory(category){
+
+    const row =
+        categoryRows[category];
+
+    if(!row){
+        return;
+    }
+
+
+    const state =
+        categoryState[category];
+
+    if(!state){
+        return;
+    }
+
+
+    row.innerHTML = "";
+
+
+    if(
+        state.songs.length === 0
+    ){
+
+        row.innerHTML = `
+
+            <div class="empty-category">
+                No songs available
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    state.songs.forEach(song => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "card";
+
+
+        const image =
+            song.image || DEFAULT_IMAGE;
+
+
+        card.innerHTML = `
+
+            <div class="card-image-wrap">
+
+                <img
+                    data-src="${escapeHTML(image)}"
+                    src="${DEFAULT_IMAGE}"
+                    alt=""
+                    loading="lazy"
+                >
+
+            </div>
+
+
+            <div class="card-name">
+                ${escapeHTML(song.name || "Unknown Song")}
+            </div>
+
+
+            <div class="card-singer">
+                ${escapeHTML(song.singer || "Unknown Singer")}
+            </div>
+
+        `;
+
+
+        card.addEventListener(
+            "click",
+            function(){
+
+                playSong(song);
+
+            }
+        );
+
+
+        row.appendChild(card);
+
+    });
+
+
+    observeImages();
+
+}
+
+
+/* =========================================================
+   CATEGORY OBSERVER
+========================================================= */
+
+function setupCategoryObserver(){
+
+    if(observer){
+
+        observer.disconnect();
+
+    }
+
+
+    observer =
+        new IntersectionObserver(
+            entries => {
+
+                entries.forEach(entry => {
+
+                    if(
+                        entry.isIntersecting
+                    ){
+
+                        const category =
+                            entry.target
+                                .dataset
+                                .category;
+
+                        if(category){
+
+                            loadCategorySongs(
+                                category
+                            );
+
+                        }
+
+                        observer.unobserve(
+                            entry.target
+                        );
+
+                    }
+
+                });
+
+            },
+            {
+                root:null,
+                rootMargin:"500px",
+                threshold:0.01
+            }
+        );
+
+
+    document
+        .querySelectorAll(".category")
+        .forEach(section => {
+
+            observer.observe(section);
+
+        });
+
+}
+
+
+/* =========================================================
+   HORIZONTAL SCROLL
+========================================================= */
+
+function scrollCategory(
+    category,
+    direction
+){
+
+    const row =
+        categoryRows[category];
+
+    if(!row){
+        return;
+    }
+
+
+    const amount =
+        row.clientWidth * 0.75;
+
+
+    row.scrollBy({
+
+        left:
+            direction === "right"
+                ? amount
+                : -amount,
+
+        behavior:"smooth"
+
+    });
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+let searchTimer = null;
+
+
+searchInput.addEventListener(
+    "input",
+    function(){
+
+        const value =
+            this.value;
+
+
+        searchClear.style.display =
+            value.trim()
+                ? "block"
+                : "none";
+
+
+        clearTimeout(
+            searchTimer
+        );
+
+
+        searchTimer =
+            setTimeout(
+                () => {
+
+                    performSearch(
+                        value
+                    );
+
+                },
+                120
+            );
+
+    }
+);
+
+
+searchClear.addEventListener(
+    "click",
+    function(){
+
+        searchInput.value = "";
+
+        searchResults.style.display =
+            "none";
+
+        searchList.innerHTML =
+            "";
+
+        searchClear.style.display =
+            "none";
+
+        searchInput.focus();
+
+    }
+);
+
+
+function performSearch(value){
+
+    const query =
+        normalizeSearch(value);
+
+
+    if(!query){
+
+        searchResults.style.display =
+            "none";
+
+        searchList.innerHTML =
+            "";
+
+        return;
+
+    }
+
+
+    searchResults.style.display =
+        "block";
+
+
+    searchResultTitle.textContent =
+        "Searching...";
+
+
+    /*
+       IMPORTANT:
+       Search loads the complete songs
+       database separately.
+    */
+
+    loadAllSongsForSearch()
+        .then(songs => {
+
+            const results =
+                songs.filter(song => {
+
+                    const name =
+                        normalizeSearch(
+                            song.name
+                        );
+
+                    const singer =
+                        normalizeSearch(
+                            song.singer
+                        );
+
+                    const category =
+                        normalizeSearch(
+                            song.category
+                        );
+
+
+                    return (
+                        name.includes(query) ||
+                        singer.includes(query) ||
+                        category.includes(query)
+                    );
+
+                });
+
+
+            renderSearchResults(
+                results
+            );
+
+        });
+
+}
+
+
+function renderSearchResults(
+    results
+){
+
+    searchList.innerHTML =
+        "";
+
+
+    searchResultTitle.textContent =
+        results.length +
+        (
+            results.length === 1
+                ? " result"
+                : " results"
+        );
+
+
+    if(results.length === 0){
+
+        searchList.innerHTML = `
+
+            <div class="empty-category">
+                No songs found
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    results.forEach(song => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "search-song";
+
+
+        const image =
+            song.image || DEFAULT_IMAGE;
+
+
+        item.innerHTML = `
+
+            <img
+                src="${escapeHTML(image)}"
+                alt=""
+                onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'"
+            >
+
+            <div class="search-song-info">
+
+                <div class="search-song-name">
+                    ${escapeHTML(song.name || "Unknown Song")}
+                </div>
+
+                <div class="search-song-singer">
+                    ${escapeHTML(song.singer || "Unknown Singer")}
+                </div>
+
+            </div>
+
+        `;
+
+
+        item.addEventListener(
+            "click",
+            function(){
+
+                playSong(song);
+
+            }
+        );
+
+
+        searchList.appendChild(item);
+
+    });
+
+}
+
+
+/* =========================================================
+   PLAY SONG
+========================================================= */
+
+function playSong(song){
+
+    if(!song){
+        return;
+    }
+
+
+    const request =
+        ++playerRequest;
+
+
+    currentSong =
+        song;
+
+
+    /*
+       OPEN PLAYER FIRST.
+       No await here.
+       Therefore tapping a card immediately
+       opens the player.
+    */
+
+    fullPlayer.style.display =
+        "flex";
+
+    miniPlayer.style.display =
+        "none";
+
+    bottomNav.style.display =
+        "none";
+
+
+    /*
+       IMAGE IS NOT LAZY IN PLAYER.
+       It loads immediately.
+    */
+
+    setPlayerImage(
+        fimg,
+        song.image || DEFAULT_IMAGE
+    );
+
+    setPlayerImage(
+        mimg,
+        song.image || DEFAULT_IMAGE
+    );
+
+
+    fname.textContent =
+        song.name ||
+        "Unknown Song";
+
+
+    fdescription.textContent =
+        song.singer ||
+        "Unknown Singer";
+
+
+    mname.textContent =
+        song.name ||
+        "Unknown Song";
+
+
+    msinger.textContent =
+        song.singer ||
+        "Unknown Singer";
+
+
+    updatePlayButtons();
+
+
+    /*
+       SHARE URL
+    */
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.search = "";
+
+    url.searchParams.set(
+        "song",
+        song.id
+    );
+
+
+    history.replaceState(
+        {},
+        "",
+        url.pathname +
+        "?" +
+        url.searchParams.toString() +
+        url.hash
+    );
+
+
+    /*
+       STOP OLD AUDIO
+    */
+
+    audio.pause();
+
+    audio.removeAttribute(
+        "src"
+    );
+
+    audio.load();
+
+
+    /*
+       IMPORTANT:
+       Audio loads ONLY after
+       user selects a song.
+    */
+
+    if(song.music){
+
+        audio.src =
+            song.music;
+
+        audio.preload =
+            "auto";
+
+        audio.load();
+
+
+        /*
+           Direct tap = user gesture.
+           Try autoplay immediately.
+        */
+
+        const promise =
+            audio.play();
+
+
+        if(promise){
+
+            promise.catch(
+                error => {
+
+                    console.log(
+                        "Autoplay prevented:",
+                        error
+                    );
+
+                    updatePlayButtons();
+
+                }
+            );
+
+        }
+
+    }
+
+
+    /*
+       Prevent old request from changing UI.
+    */
+
+    if(request !== playerRequest){
+        return;
+    }
+
+
+    updatePlayButtons();
+
+}
+
+
+/* =========================================================
+   PLAY / PAUSE
+========================================================= */
+
+function togglePlay(){
+
+    if(!currentSong){
+        return;
+    }
+
+
+    if(!audio.src){
+
+        if(currentSong.music){
+
+            audio.src =
+                currentSong.music;
+
+            audio.preload =
+                "auto";
+
+            audio.load();
+
+        }
+        else{
+
+            return;
+
+        }
+
+    }
+
+
+    if(audio.paused){
+
+        audio.play()
+            .catch(error => {
+
+                console.error(
+                    "Play error:",
+                    error
+                );
+
+            });
+
+    }
+    else{
+
+        audio.pause();
+
+    }
+
+
+    updatePlayButtons();
+
+}
+
+
+/* =========================================================
+   UPDATE PLAY BUTTONS
+========================================================= */
+
+function updatePlayButtons(){
+
+    const playing =
+        currentSong &&
+        !audio.paused &&
+        !audio.ended;
+
+
+    playButton.textContent =
+        playing
+            ? "❚❚"
+            : "▶";
+
+
+    miniPlayButton.textContent =
+        playing
+            ? "❚❚"
+            : "▶";
+
+}
+
+
+/* =========================================================
+   AUDIO EVENTS
+========================================================= */
+
+audio.addEventListener(
+    "play",
+    updatePlayButtons
+);
+
+audio.addEventListener(
+    "pause",
+    updatePlayButtons
+);
+
+audio.addEventListener(
+    "ended",
+    updatePlayButtons
+);
+
+
+audio.addEventListener(
+    "loadedmetadata",
+    function(){
+
+        durationElement.textContent =
+            formatTime(
+                audio.duration
+            );
+
+    }
+);
+
+
+audio.addEventListener(
+    "timeupdate",
+    function(){
+
+        if(!audio.duration){
+            return;
+        }
+
+
+        progress.value =
+            (
+                audio.currentTime /
+                audio.duration
+            ) * 100;
+
+
+        currentTimeElement.textContent =
+            formatTime(
+                audio.currentTime
+            );
+
+    }
+);
+
+
+/* =========================================================
+   PROGRESS
+========================================================= */
+
+progress.addEventListener(
+    "input",
+    function(){
+
+        if(!audio.duration){
+            return;
+        }
+
+
+        audio.currentTime =
+            (
+                Number(this.value) /
+                100
+            ) *
+            audio.duration;
+
+    }
+);
+
+
+/* =========================================================
+   TIME
+========================================================= */
+
+function formatTime(seconds){
+
+    if(
+        !Number.isFinite(seconds) ||
+        seconds < 0
+    ){
+
+        return "0:00";
+
+    }
+
+
+    const minutes =
+        Math.floor(
+            seconds / 60
+        );
+
+
+    const secs =
+        Math.floor(
+            seconds % 60
+        );
+
+
+    return (
+        minutes +
+        ":" +
+        String(secs).padStart(
+            2,
+            "0"
+        )
+    );
+
+}
+
+
+/* =========================================================
+   MINIMIZE
+========================================================= */
+
+function minimizePlayer(){
+
+    if(!currentSong){
+        return;
+    }
+
+
+    fullPlayer.style.display =
+        "none";
+
+    miniPlayer.style.display =
+        "flex";
+
+    bottomNav.style.display =
+        "flex";
+
+}
+
+
+/* =========================================================
+   RESTORE
+========================================================= */
+
+function restorePlayer(){
+
+    if(!currentSong){
+        return;
+    }
+
+
+    fullPlayer.style.display =
+        "flex";
+
+    miniPlayer.style.display =
+        "none";
+
+    bottomNav.style.display =
+        "none";
+
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+function closePlayer(){
+
+    playerRequest++;
+
+
+    audio.pause();
+
+    audio.removeAttribute(
+        "src"
+    );
+
+    audio.load();
+
+
+    currentSong =
+        null;
+
+
+    fullPlayer.style.display =
+        "none";
+
+    miniPlayer.style.display =
+        "none";
+
+    bottomNav.style.display =
+        "flex";
+
+
+    progress.value =
+        0;
+
+
+    currentTimeElement.textContent =
+        "0:00";
+
+    durationElement.textContent =
+        "0:00";
+
+
+    /*
+       Remove ?song=...
+    */
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    url.search = "";
+
+    history.replaceState(
+        {},
+        "",
+        url.pathname +
+        url.hash
+    );
+
+
+    updatePlayButtons();
+
+}
+
+
+/* =========================================================
+   SHARE
+========================================================= */
+
+async function shareSong(){
+
+    if(!currentSong){
+        return;
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.search = "";
+
+    url.searchParams.set(
+        "song",
+        currentSong.id
+    );
+
+
+    const shareUrl =
+        url.toString();
+
+
+    if(
+        navigator.share
+    ){
+
+        try{
+
+            await navigator.share({
+
+                title:
+                    currentSong.name ||
+                    "Pocket Music",
+
+                text:
+                    (
+                        currentSong.name ||
+                        "Listen on Pocket Music"
+                    ),
+
+                url:
+                    shareUrl
+
+            });
+
+        }
+        catch(error){
+
+            console.log(
+                "Share cancelled"
+            );
+
+        }
+
+    }
+    else{
+
+        try{
+
+            await navigator.clipboard.writeText(
+                shareUrl
+            );
+
+            alert(
+                "Song link copied!"
+            );
+
+        }
+        catch(error){
+
+            prompt(
+                "Copy this link:",
+                shareUrl
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN SHARED SONG
+========================================================= */
+
+async function openSharedSong(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const songId =
+        params.get("song");
+
+
+    if(!songId){
+        return;
+    }
+
+
+    /*
+       First check already-loaded songs.
+    */
+
+    let song =
+        allSongs.find(
+            item =>
+                item.id === songId
+        );
+
+
+    /*
+       If not found, directly load
+       the Firebase song by key.
+    */
+
+    if(!song){
+
+        try{
+
+            const snapshot =
+                await db
+                    .ref(
+                        "songs/" +
+                        songId
+                    )
+                    .once(
+                        "value"
+                    );
+
+
+            if(
+                snapshot.exists()
+            ){
+
+                song =
+                    snapshot.val() || {};
+
+                song.id =
+                    snapshot.key;
+
+            }
+
+        }
+        catch(error){
+
+            console.error(
+                "Shared song error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    if(song){
+
+        playSong(song);
+
+    }
+    else{
+
+        console.log(
+            "Song not found:",
+            songId
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+loadCategories();
+
+
+/*
+   Search database in background.
+   This does NOT load audio.
+*/
+
+loadAllSongsForSearch();
+
+
+/*
+   Shared song.
+*/
+
+setTimeout(
+    openSharedSong,
+    500
+);
+
+
+/* =========================================================
+   PAGE VISIBILITY
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    function(){
+
+        if(
+            document.visibilityState ===
+            "visible"
+        ){
+
+            updatePlayButtons();
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+</html>
